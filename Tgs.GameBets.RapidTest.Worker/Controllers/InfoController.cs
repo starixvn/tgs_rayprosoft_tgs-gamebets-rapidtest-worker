@@ -1,0 +1,39 @@
+﻿using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Tgs.GameBets.RapidTest.Worker.Core;
+
+namespace Tgs.GameBets.RapidTest.Worker.Controllers;
+
+[Route("[controller]")]
+[ApiController]
+public class InfoController : ControllerBase
+{
+	[HttpGet]
+	public async Task<object> GetAsync(
+		[FromServices] IWebHostEnvironment hostingEnvironment,
+		[FromServices] IOptions<PolicySettingsOptions> policySettingsOptions,
+		[FromServices] IOptions<ExpireStringsOptions> expireStringsOptions)
+	{
+		var hostName = Dns.GetHostName();
+		var hostEntry = await Dns.GetHostEntryAsync(hostName).ConfigureAwait(false);
+		var hostIp = Array.Find(hostEntry.AddressList,
+			x => x.AddressFamily == AddressFamily.InterNetwork);
+
+		return new
+		{
+			Environment.MachineName,
+			HostName = hostName,
+			HostIp = hostIp?.ToString() ?? string.Empty,
+			Environment = hostingEnvironment.EnvironmentName,
+			OsVersion = $"{Environment.OSVersion}",
+			Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(),
+			ProcessCount = Environment.ProcessorCount,
+			PolicySettings = policySettingsOptions.Value,
+			ExpireStrings = expireStringsOptions.Value
+		};
+	}
+}
