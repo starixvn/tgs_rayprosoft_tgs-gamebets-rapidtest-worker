@@ -8,11 +8,14 @@ data:
     {
       "Logging": {
         "LogLevel": {
-          "Default": "Warning"
+          "Default": "Warning",
+          "Tgs.GameBets.RapidTest.Worker.Messages.GameRecordHandleDataMessageHandler": "Information",
+          "Tgs.GameBets.RapidTest.Worker.Messages.GameBetsRapidTestWorkerMessageHandler": "Information"
         }
       },
       "GameBetsRapidTestWorkerConnectionStrings": {
         "GameBetsRapidTestClientBaseUrl": "http://game-gamebets-rapidtest/",
+        "GameBetsClientBaseUrl": "http://game-gamebets/",
         "GameRoundsClientBaseUrl": "http://game-gamerounds/"
       }
     }
