@@ -57,11 +57,17 @@ builder.Services.AddGameBetsRapidTestWorker()
 	.AddOptions<ExpireStringsOptions>()
 	.Configure((options) => builder.Configuration.GetSection("ExpireStrings").Bind(options))
 	.Services
+	.AddGameBetsRapidTestClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
+	{
+		var config = sp.GetRequiredService<IConfiguration>();
+		http.BaseAddress = config.GetValue<Uri>("GameBetsRapidTestWorkerConnectionStrings:GameBetsRapidTestClientBaseUrl");
+	}))
 	.AddGameBetsClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
-		http.BaseAddress = config.GetValue<Uri>("GameWagersRapidTestConnectionStrings:GameRoundsClientBaseUrl");
+		http.BaseAddress = config.GetValue<Uri>("GameBetsRapidTestWorkerConnectionStrings:GameRoundsClientBaseUrl");
 	}));
+
 
 builder.Services
 	.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with
