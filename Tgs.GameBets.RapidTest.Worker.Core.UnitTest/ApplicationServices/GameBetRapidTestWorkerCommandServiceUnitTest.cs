@@ -1,8 +1,9 @@
 ﻿using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
-using Tgs.ServiceUtility;
 using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
+
+using Tgs.ServiceUtility;
 
 namespace Tgs.GameBets.RapidTest.Worker.Core.UnitTest.ApplicationServices;
 

@@ -1,13 +1,13 @@
 ﻿using System.Text.Json.Nodes;
-using Valhalla.MessageQueue;
 using Tgs.GameBets.RapidTest.Worker.Core;
 using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
-using Tgs.GameBets.RapidTest.Worker.Messages;
+
+using Valhalla.MessageQueue;
 
 namespace Tgs.GameBets.RapidTest.Worker.Messages;
 
-public class GameBetRapidTestWorkerMessageHandler(
-	ILogger<GameBetRapidTestWorkerMessageHandler> logger,
+public class GameRecordHandleDataMessageHandler(
+	ILogger<GameRecordHandleDataMessageHandler> logger,
 	IRapidTestDispatcher dispatcher) : IMessageHandler<GameRecord.Handle.Common.Protos.GameWagerPublish>
 {
 	public ValueTask HandleAsync(string subject, GameRecord.Handle.Common.Protos.GameWagerPublish data, IEnumerable<MessageHeaderValue>? headerValues, CancellationToken cancellationToken = default)
@@ -17,9 +17,14 @@ public class GameBetRapidTestWorkerMessageHandler(
 			subject,
 			new
 			{
-				GameProviderId = data.GameProviderId.ToGuid(),
+				data.GameProviderCode,
+				data.SubGameProviderCode,
 				data.GameId,
+				data.ResellerCode,
+				data.LicenseeCode,
+				data.BrandCode,
 				data.PlayerCode,
+				data.Username,
 				WalletId = data.WalletId.ToGuid(),
 				data.ExternalRoundId,
 				data.ExternalWagerId,

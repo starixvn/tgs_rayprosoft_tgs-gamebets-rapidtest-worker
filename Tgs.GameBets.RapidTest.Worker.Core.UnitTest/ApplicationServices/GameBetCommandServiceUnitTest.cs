@@ -1,11 +1,13 @@
-﻿using Google.Protobuf.WellKnownTypes;
+﻿using System.Text.Json.Nodes;
+
+using Google.Protobuf.WellKnownTypes;
 using NSubstitute;
-using System.Text.Json.Nodes;
-using Valhalla.MessageQueue;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
 
+using Valhalla.MessageQueue;
+
 namespace Tgs.GameBets.RapidTest.Worker.Core.UnitTest.ApplicationServices;
+
 public class GameBetCommandServiceUnitTest
 {
 	[Fact]

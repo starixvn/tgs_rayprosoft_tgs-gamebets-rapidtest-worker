@@ -13,6 +13,7 @@ using Tgs.GameBets.RapidTest.Worker.Core;
 using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
 
 namespace Tgs.GameBets.RapidTest.Worker.Core.UnitTest.ApplicationServices;
+
 public class GameRoundCommandGetServiceUnitTest
 {
 	[Fact]

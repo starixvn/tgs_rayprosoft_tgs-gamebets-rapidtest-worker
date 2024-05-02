@@ -6,10 +6,11 @@ using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Tgs.GameRecord.Handle.Common;
-using Tgs.MessageQueue.Nats.Serializers;
 using Tgs.GameBets.RapidTest.Worker.Core;
 using Tgs.GameBets.RapidTest.Worker.Messages;
+
+using Tgs.GameRecord.Handle.Common;
+using Tgs.MessageQueue.Nats.Serializers;
 
 var filterInstrumentations = new[] { "html", "ico", "png", "jpg" };
 
@@ -71,8 +72,10 @@ builder.Services
 	.AddMessageQueue()
 	.AddNatsMessageQueue(config => config
 	.ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
-	.AddHandler<GameBetRapidTestWorkerMessageHandler>(NatsConst.GameRecordHandleDataPublish, string.Concat(NatsConst.GameRecordHandleDataPublish, ".rapidtest")))
+	.AddHandler<GameBetsRapidTestWorkerMessageHandler>(Tgs.GameBets.RapidTest.Worker.Common.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest, Tgs.GameBets.RapidTest.Worker.Common.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest)
+	.AddHandler<GameRecordHandleDataMessageHandler>(NatsConst.GameRecordHandleDataPublish, string.Concat(NatsConst.GameRecordHandleDataPublish, ".rapidtest")))
 	.ClearAllExchanges()
+	.AddNatsGlobPatternExchange(Tgs.GameBets.RapidTest.Worker.Common.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest)
 	.AddNatsGlobPatternExchange(Tgs.GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest);
 
 builder.Services

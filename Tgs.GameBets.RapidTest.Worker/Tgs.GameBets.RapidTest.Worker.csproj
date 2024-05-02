@@ -31,6 +31,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Tgs.GameBets.RapidTest.Worker.Common\Tgs.GameBets.RapidTest.Worker.Common.csproj" />
 	  <ProjectReference Include="..\Tgs.GameBets.RapidTest.Worker.Core\Tgs.GameBets.RapidTest.Worker.Core.csproj" />
 	</ItemGroup>
 
