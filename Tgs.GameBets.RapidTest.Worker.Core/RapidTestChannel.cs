@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
-using Tgs.ServiceUtility;
-using Tgs.GameBets.RapidTest.Worker.Core;
 using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
+
+using Tgs.ServiceUtility;
 
 namespace Tgs.GameBets.RapidTest.Worker.Core;
 
