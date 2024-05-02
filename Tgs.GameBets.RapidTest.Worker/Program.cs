@@ -73,7 +73,6 @@ builder.Services.AddGameBetsRapidTestWorker()
 		http.BaseAddress = config.GetValue<Uri>("GameBetsRapidTestWorkerConnectionStrings:GameRoundsClientBaseUrl");
 	}));
 
-
 builder.Services
 	.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with
 	{
