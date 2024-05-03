@@ -82,11 +82,9 @@ builder.Services
 	.AddMessageQueue()
 	.AddNatsMessageQueue(config => config
 	.ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
-	.AddHandler<GameBetsRapidTestWorkerMessageHandler>(Tgs.GameBets.RapidTest.Worker.Common.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest, Tgs.GameBets.RapidTest.Worker.Common.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest)
-	.AddHandler<GameRecordHandleDataMessageHandler>(NatsConst.GameRecordHandleDataPublish, string.Concat(NatsConst.GameRecordHandleDataPublish, ".rapidtest")))
+	.AddHandler<GameBetsRapidTestWorkerMessageHandler>(Tgs.GameBets.RapidTest.Worker.Common.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest, Tgs.GameBets.RapidTest.Worker.Common.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest))
 	.ClearAllExchanges()
-	.AddNatsGlobPatternExchange(Tgs.GameBets.RapidTest.Worker.Common.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest)
-	.AddNatsGlobPatternExchange(Tgs.GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest);
+	.AddNatsGlobPatternExchange(Tgs.GameBets.RapidTest.Worker.Common.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest);
 
 builder.Services
 	.AddOpenTelemetry()

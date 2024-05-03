@@ -4,8 +4,6 @@ using Polly;
 using Tgs.GameBets.Common.Enums;
 using Tgs.GameRounds.Client;
 using Tgs.ServiceUtility;
-using Tgs.GameBets.RapidTest.Worker.Core;
-using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
 
 namespace Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
 
