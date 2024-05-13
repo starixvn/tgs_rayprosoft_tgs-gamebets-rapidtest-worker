@@ -8,8 +8,6 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Tgs.GameBets.RapidTest.Worker.Core;
 using Tgs.GameBets.RapidTest.Worker.Messages;
-
-using Tgs.GameRecord.Handle.Common;
 using Tgs.MessageQueue.Nats.Serializers;
 
 var filterInstrumentations = new[] { "html", "ico", "png", "jpg" };
