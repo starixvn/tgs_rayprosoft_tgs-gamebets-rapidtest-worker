@@ -46,19 +46,6 @@ internal class GameRoundCommandGetService(
 			playerWinLoss = query.PlayerWinLoss;
 		}
 
-		var retryCount = _policySettingsOptions.RetryCount;
-		var retrySeconds = _policySettingsOptions.RetrySeconds;
-		var retryPolicy = Policy
-			.Handle<HttpRequestException>()
-			.WaitAndRetryAsync(
-				retryCount: retryCount,
-				retryAttempt => TimeSpan.FromSeconds(Math.Pow(retrySeconds, retryAttempt)),
-				onRetry: (exception, retryTime, retryCount, context) => logger.LogWarning("LogOn:{logOn} Exception:{exception} RetryTime:{retryTime} RetryCount:{retryCount}",
-					DateTime.Now.ToString("o"),
-					exception.Message,
-					retryTime,
-					retryCount));
-
 		var source = new GameRounds.Common.ViewModels.RoundCommandViewModel(
 			GameProviderId: query.GameProviderId,
 			GameProviderConfigurationId: query.GameProviderConfigurationId,
@@ -79,6 +66,29 @@ internal class GameRoundCommandGetService(
 			Turnover: turnover,
 			PlayerWinLoss: playerWinLoss,
 			AdditionalData: query.AdditionalData);
+
+		var retryCount = _policySettingsOptions.RetryCount;
+		var retrySeconds = _policySettingsOptions.RetrySeconds;
+		var retryPolicy = Policy
+			.Handle<HttpRequestException>()
+			.WaitAndRetryAsync(
+				retryCount: retryCount,
+				retryAttempt => TimeSpan.FromSeconds(Math.Pow(retrySeconds, retryAttempt)),
+				onRetry: (exception, retryTime, retryCount, context) => logger.LogWarning(exception, "LogOn:{logOn} Exception:{exception} RetryTime:{retryTime} RetryCount:{retryCount} Source:{source}",
+					DateTime.Now.ToString("o"),
+					exception.Message,
+					retryTime,
+					retryCount,
+					new
+					{
+						query.GameProviderId,
+						query.GameId,
+						query.PlayerCode,
+						query.WalletId,
+						query.ExternalBetId,
+						query.ExternalCreatedOn
+					}));
+
 		return await retryPolicy.ExecuteAsync(() => client.RoundCommandAsync(
 			source: source,
 			cancellationToken: cancellationToken).AsTask())
