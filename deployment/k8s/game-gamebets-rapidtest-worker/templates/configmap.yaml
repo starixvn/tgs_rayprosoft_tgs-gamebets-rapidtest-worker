@@ -9,7 +9,7 @@ data:
       "Logging": {
         "LogLevel": {
           "Default": "Warning",
-          "Tgs.GameBets.RapidTest.Worker.Messages.GameBetsRapidTestWorkerMessageHandler": "Warning"
+          "Tgs.GameBets.RapidTest.Worker.Messages.GameBetsRapidTestWorkerMessageHandler": "Information"
         }
       },
       "GameBetsRapidTestWorkerConnectionStrings": {
