@@ -2,17 +2,25 @@
 using Tgs.ServiceUtility;
 using Valhalla.MessageQueue;
 using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
+using Tgs.GameBets.Worker.Client;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
+using Polly;
 
 namespace Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
 
 internal class GameBetCommandService(
-	IMessageSender messageSender) : ICommandService<GameBetCommand>
+	ILogger<GameBetCommandService> logger,
+	IOptions<PolicySettingsOptions> options,
+	IGameBetsWorkerClient client) : ICommandService<GameBetCommand>
 {
-	public ValueTask ExecuteAsync(GameBetCommand command, CancellationToken cancellationToken = default)
+	private readonly PolicySettingsOptions _policySettingsOptions = options.Value;
+
+	public async ValueTask ExecuteAsync(GameBetCommand command, CancellationToken cancellationToken = default)
 	{
 		if (command.BetState is GameBets.Common.Enums.BetState.Waiting or GameBets.Common.Enums.BetState.Running)
 		{
-			return ValueTask.CompletedTask;
+			return;
 		}
 
 		var betState = command.BetState switch
@@ -65,7 +73,7 @@ internal class GameBetCommandService(
 			_ => GameBets.Worker.Common.Protos.JackpotState.None
 		};
 
-		var data = new GameBets.Worker.Common.Protos.GameBetsWorkerRequest
+		var source = new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
 		{
 			GameBetId = command.Id,
 			GameProviderId = command.GameProviderId,
@@ -79,10 +87,10 @@ internal class GameBetCommandService(
 			WalletId = command.WalletId,
 			ExternalRoundId = command.ExternalRoundId,
 			ExternalBetId = command.ExternalBetId,
-			ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-			ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-			ExternalPayoffOn = command.ExternalPayoffOn.ToTimestamp(),
-			ExternalResettleOn = command.ExternalResettleOn.ToTimestamp(),
+			ExternalCreatedOn = command.ExternalCreatedOn,
+			ExternalClosedOn = command.ExternalClosedOn,
+			ExternalPayoffOn = command.ExternalPayoffOn,
+			ExternalResettleOn = command.ExternalResettleOn,
 			BetState = betState,
 			BetType = betType,
 			FreeGameState = freeGameState,
@@ -101,9 +109,35 @@ internal class GameBetCommandService(
 			AdditionalData = command.AdditionalData.ToJsonString(),
 		};
 
-		return messageSender.PublishAsync(
-			subject: GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest,
-			data: data,
-			cancellationToken: cancellationToken);
+		var retryCount = _policySettingsOptions.RetryCount;
+		var retrySeconds = _policySettingsOptions.RetrySeconds;
+		var retryPolicy = Policy
+			.Handle<HttpRequestException>()
+			.WaitAndRetryAsync(
+				retryCount: retryCount,
+				retryAttempt => TimeSpan.FromSeconds(Math.Pow(retrySeconds, retryAttempt)),
+				onRetry: (exception, retryTime, retryCount, context) => logger.LogWarning(exception, "{logWarning}",
+					new
+					{
+						LogOn = DateTime.Now.ToString("u"),
+						RetryTime = retryTime,
+						RetryCount = retryCount,
+						Data = new
+						{
+							source.GameProviderId,
+							source.GameId,
+							source.PlayerCode,
+							source.WalletId,
+							source.ExternalRoundId,
+							source.ExternalBetId,
+							ExternalCreatedOn = source.ExternalCreatedOn.ToString("u")
+						},
+						exception.Message
+					}));
+
+		await retryPolicy.ExecuteAsync(() => client.HandleAsync(
+			source: source,
+			cancellationToken: cancellationToken).AsTask())
+		   .ConfigureAwait(false);
 	}
 }
