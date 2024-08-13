@@ -1,9 +1,11 @@
 ﻿using System.Text.Json.Nodes;
 
 using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
-
+using Tgs.GameBets.Worker.Client;
 using Valhalla.MessageQueue;
 
 namespace Tgs.GameBets.RapidTest.Worker.Core.UnitTest.ApplicationServices;
@@ -13,7 +15,13 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Waiting()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -53,22 +61,29 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(0)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Any<GameBets.Worker.Common.Protos.GameBetsWorkerRequest>(),
+			.HandleAsync(
+			source: Arg.Any<GameBets.Worker.Common.ViewModels.WorkerHandleViewModel>(),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
 	[Fact]
 	public async Task BetState_Is_Running()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -108,22 +123,29 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(0)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Any<GameBets.Worker.Common.Protos.GameBetsWorkerRequest>(),
+			.HandleAsync(
+			source: Arg.Any<GameBets.Worker.Common.ViewModels.WorkerHandleViewModel>(),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
 	[Fact]
 	public async Task BetState_Is_Void()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -163,15 +185,16 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Is(new GameBets.Worker.Common.Protos.GameBetsWorkerRequest
+			.HandleAsync(
+			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
 			{
 				GameBetId = command.Id,
 				GameProviderId = command.GameProviderId,
@@ -185,10 +208,10 @@ public class GameBetCommandServiceUnitTest
 				WalletId = command.WalletId,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalPayoffOn.ToTimestamp(),
-				ExternalResettleOn = command.ExternalResettleOn.ToTimestamp(),
+				ExternalCreatedOn = command.ExternalCreatedOn,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalPayoffOn,
+				ExternalResettleOn = command.ExternalResettleOn,
 				BetState = GameBets.Worker.Common.Protos.BetState.Void,
 				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
 				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
@@ -212,7 +235,13 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Refund()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -252,15 +281,16 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Is(new GameBets.Worker.Common.Protos.GameBetsWorkerRequest
+			.HandleAsync(
+			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
 			{
 				GameBetId = command.Id,
 				GameProviderId = command.GameProviderId,
@@ -274,10 +304,10 @@ public class GameBetCommandServiceUnitTest
 				WalletId = command.WalletId,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalPayoffOn.ToTimestamp(),
-				ExternalResettleOn = command.ExternalResettleOn.ToTimestamp(),
+				ExternalCreatedOn = command.ExternalCreatedOn,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalPayoffOn,
+				ExternalResettleOn = command.ExternalResettleOn,
 				BetState = GameBets.Worker.Common.Protos.BetState.Refund,
 				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
 				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
@@ -301,7 +331,13 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Refund_And_Cashout()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -341,15 +377,16 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Is(new GameBets.Worker.Common.Protos.GameBetsWorkerRequest
+			.HandleAsync(
+			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
 			{
 				GameBetId = command.Id,
 				GameProviderId = command.GameProviderId,
@@ -363,10 +400,10 @@ public class GameBetCommandServiceUnitTest
 				WalletId = command.WalletId,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalPayoffOn.ToTimestamp(),
-				ExternalResettleOn = command.ExternalResettleOn.ToTimestamp(),
+				ExternalCreatedOn = command.ExternalCreatedOn,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalPayoffOn,
+				ExternalResettleOn = command.ExternalResettleOn,
 				BetState = GameBets.Worker.Common.Protos.BetState.Refund,
 				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
 				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
@@ -390,7 +427,13 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Cancel()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -430,15 +473,16 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Is(new GameBets.Worker.Common.Protos.GameBetsWorkerRequest
+			.HandleAsync(
+			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
 			{
 				GameBetId = command.Id,
 				GameProviderId = command.GameProviderId,
@@ -452,10 +496,10 @@ public class GameBetCommandServiceUnitTest
 				WalletId = command.WalletId,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalPayoffOn.ToTimestamp(),
-				ExternalResettleOn = command.ExternalResettleOn.ToTimestamp(),
+				ExternalCreatedOn = command.ExternalCreatedOn,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalPayoffOn,
+				ExternalResettleOn = command.ExternalResettleOn,
 				BetState = GameBets.Worker.Common.Protos.BetState.Cancel,
 				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
 				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
@@ -479,7 +523,13 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Win()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -519,15 +569,16 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Is(new GameBets.Worker.Common.Protos.GameBetsWorkerRequest
+			.HandleAsync(
+			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
 			{
 				GameBetId = command.Id,
 				GameProviderId = command.GameProviderId,
@@ -541,10 +592,10 @@ public class GameBetCommandServiceUnitTest
 				WalletId = command.WalletId,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalPayoffOn.ToTimestamp(),
-				ExternalResettleOn = command.ExternalResettleOn.ToTimestamp(),
+				ExternalCreatedOn = command.ExternalCreatedOn,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalPayoffOn,
+				ExternalResettleOn = command.ExternalResettleOn,
 				BetState = GameBets.Worker.Common.Protos.BetState.Win,
 				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
 				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
@@ -568,7 +619,13 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Win_And_FreeGame()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -608,15 +665,16 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Is(new GameBets.Worker.Common.Protos.GameBetsWorkerRequest
+			.HandleAsync(
+			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
 			{
 				GameBetId = command.Id,
 				GameProviderId = command.GameProviderId,
@@ -630,10 +688,10 @@ public class GameBetCommandServiceUnitTest
 				WalletId = command.WalletId,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalPayoffOn.ToTimestamp(),
-				ExternalResettleOn = command.ExternalResettleOn.ToTimestamp(),
+				ExternalCreatedOn = command.ExternalCreatedOn,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalPayoffOn,
+				ExternalResettleOn = command.ExternalResettleOn,
 				BetState = GameBets.Worker.Common.Protos.BetState.Win,
 				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
 				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.FreeGame,
@@ -657,7 +715,13 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Win_And_Jackpot()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -697,15 +761,16 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Is(new GameBets.Worker.Common.Protos.GameBetsWorkerRequest
+			.HandleAsync(
+			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
 			{
 				GameBetId = command.Id,
 				GameProviderId = command.GameProviderId,
@@ -719,10 +784,10 @@ public class GameBetCommandServiceUnitTest
 				WalletId = command.WalletId,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalPayoffOn.ToTimestamp(),
-				ExternalResettleOn = command.ExternalResettleOn.ToTimestamp(),
+				ExternalCreatedOn = command.ExternalCreatedOn,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalPayoffOn,
+				ExternalResettleOn = command.ExternalResettleOn,
 				BetState = GameBets.Worker.Common.Protos.BetState.Win,
 				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
 				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
@@ -746,7 +811,13 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Loss()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -786,15 +857,16 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Is(new GameBets.Worker.Common.Protos.GameBetsWorkerRequest
+			.HandleAsync(
+			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
 			{
 				GameBetId = command.Id,
 				GameProviderId = command.GameProviderId,
@@ -808,10 +880,10 @@ public class GameBetCommandServiceUnitTest
 				WalletId = command.WalletId,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalPayoffOn.ToTimestamp(),
-				ExternalResettleOn = command.ExternalResettleOn.ToTimestamp(),
+				ExternalCreatedOn = command.ExternalCreatedOn,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalPayoffOn,
+				ExternalResettleOn = command.ExternalResettleOn,
 				BetState = GameBets.Worker.Common.Protos.BetState.Loss,
 				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
 				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
@@ -835,7 +907,13 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Draw()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -875,15 +953,16 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Is(new GameBets.Worker.Common.Protos.GameBetsWorkerRequest
+			.HandleAsync(
+			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
 			{
 				GameBetId = command.Id,
 				GameProviderId = command.GameProviderId,
@@ -897,10 +976,10 @@ public class GameBetCommandServiceUnitTest
 				WalletId = command.WalletId,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalPayoffOn.ToTimestamp(),
-				ExternalResettleOn = command.ExternalResettleOn.ToTimestamp(),
+				ExternalCreatedOn = command.ExternalCreatedOn,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalPayoffOn,
+				ExternalResettleOn = command.ExternalResettleOn,
 				BetState = GameBets.Worker.Common.Protos.BetState.Draw,
 				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
 				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
@@ -924,7 +1003,13 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_HalfWin()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -964,15 +1049,16 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Is(new GameBets.Worker.Common.Protos.GameBetsWorkerRequest
+			.HandleAsync(
+			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
 			{
 				GameBetId = command.Id,
 				GameProviderId = command.GameProviderId,
@@ -986,10 +1072,10 @@ public class GameBetCommandServiceUnitTest
 				WalletId = command.WalletId,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalPayoffOn.ToTimestamp(),
-				ExternalResettleOn = command.ExternalResettleOn.ToTimestamp(),
+				ExternalCreatedOn = command.ExternalCreatedOn,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalPayoffOn,
+				ExternalResettleOn = command.ExternalResettleOn,
 				BetState = GameBets.Worker.Common.Protos.BetState.HalfWin,
 				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
 				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
@@ -1013,7 +1099,13 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_HalfLoss()
 	{
-		var fakerIMessageSender = Substitute.For<IMessageSender>();
+		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeOptions = Options.Create(new PolicySettingsOptions
+		{
+			RetryCount = 1,
+			RetrySeconds = 1,
+		});
+		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
 		var command = new GameBetCommand(
 			Id: Guid.NewGuid(),
@@ -1053,15 +1145,16 @@ public class GameBetCommandServiceUnitTest
 			});
 
 		var sut = new GameBetCommandService(
-			fakerIMessageSender);
+			faceLogger,
+			fakeOptions,
+			fakeClient);
 
 		await sut.ExecuteAsync(command: command);
 
-		_ = fakerIMessageSender
+		_ = fakeClient
 			.Received(1)
-			.PublishAsync(
-			subject: Arg.Is(GameBets.Worker.Common.GameBetsWorkerNatsConst.GameBetsWorkerRequest),
-			data: Arg.Is(new GameBets.Worker.Common.Protos.GameBetsWorkerRequest
+			.HandleAsync(
+			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
 			{
 				GameBetId = command.Id,
 				GameProviderId = command.GameProviderId,
@@ -1075,10 +1168,10 @@ public class GameBetCommandServiceUnitTest
 				WalletId = command.WalletId,
 				ExternalRoundId = command.ExternalRoundId,
 				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = command.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = command.ExternalPayoffOn.ToTimestamp(),
-				ExternalResettleOn = command.ExternalResettleOn.ToTimestamp(),
+				ExternalCreatedOn = command.ExternalCreatedOn,
+				ExternalClosedOn = command.ExternalClosedOn,
+				ExternalPayoffOn = command.ExternalPayoffOn,
+				ExternalResettleOn = command.ExternalResettleOn,
 				BetState = GameBets.Worker.Common.Protos.BetState.HalfLoss,
 				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
 				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,

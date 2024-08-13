@@ -74,19 +74,22 @@ internal class GameRoundCommandGetService(
 			.WaitAndRetryAsync(
 				retryCount: retryCount,
 				retryAttempt => TimeSpan.FromSeconds(Math.Pow(retrySeconds, retryAttempt)),
-				onRetry: (exception, retryTime, retryCount, context) => logger.LogWarning(exception, "LogOn:{logOn} Exception:{exception} RetryTime:{retryTime} RetryCount:{retryCount} Source:{source}",
-					DateTime.Now.ToString("o"),
-					exception.Message,
-					retryTime,
-					retryCount,
+				onRetry: (exception, retryTime, retryCount, context) => logger.LogWarning(exception, "{logWarning}",
 					new
 					{
-						query.GameProviderId,
-						query.GameId,
-						query.PlayerCode,
-						query.WalletId,
-						query.ExternalBetId,
-						query.ExternalCreatedOn
+						LogOn = DateTime.Now.ToString("u"),
+						RetryTime = retryTime,
+						RetryCount = retryCount,
+						Data = new
+						{
+							source.GameProviderId,
+							source.GameId,
+							source.PlayerCode,
+							source.WalletId,
+							source.ExternalRoundId,
+							ExternalCreatedOn = source.ExternalCreatedOn.ToString("u")
+						},
+						exception.Message
 					}));
 
 		return await retryPolicy.ExecuteAsync(() => client.RoundCommandAsync(
