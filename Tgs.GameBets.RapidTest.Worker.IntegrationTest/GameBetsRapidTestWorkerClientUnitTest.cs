@@ -7,7 +7,7 @@ using Valhalla.MessageQueue;
 
 namespace Tgs.GameBets.RapidTest.Worker.IntegrationTest;
 
-public class GameBetsWorkerClientUnitTest
+public class GameBetsRapidTestWorkerClientUnitTest
 {
 	[Fact]
 	public async Task Normal_Process()
@@ -55,7 +55,7 @@ public class GameBetsWorkerClientUnitTest
 		};
 
 		var fakeMessageSender = Substitute.For<IMessageSender>();
-		var web = new GameBetsWorkerApplication(builder => _ = builder.ConfigureServices(services => _ = services.AddTransient(_ => fakeMessageSender)));
+		var web = new GameBetsRapidTestWorkerApplication(builder => _ = builder.ConfigureServices(services => _ = services.AddTransient(_ => fakeMessageSender)));
 
 		var httpClient = web.CreateDefaultClient();
 		var client = new GameBetsRapidTestWorkerClient(httpClient);
