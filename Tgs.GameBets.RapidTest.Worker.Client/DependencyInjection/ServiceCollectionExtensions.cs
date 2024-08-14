@@ -4,7 +4,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-	public static IServiceCollection AddGameBetsWorkerClient(this IServiceCollection services, Action<IHttpClientBuilder> httpClientConfigure)
+	public static IServiceCollection AddGameBetsRapidTestWorkerClient(this IServiceCollection services, Action<IHttpClientBuilder> httpClientConfigure)
 	{
 		httpClientConfigure(services.AddHttpClient<IGameBetsRapidTestWorkerClient, GameBetsRapidTestWorkerClient>());
 
