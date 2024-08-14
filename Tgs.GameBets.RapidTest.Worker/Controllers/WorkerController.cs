@@ -64,63 +64,64 @@ public class WorkerController : ControllerBase
 		[FromServices] IMessageSender messageSender,
 		[FromBody] Common.ViewModels.GameBetRapidTestWorkerHandleViewModel source)
 	{
-		await messageSender.PublishAsync(
-			subject: GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest,
-			data: new Common.Protos.GameBetsRapidTestWorkerRequest
-			{
-				GameProviderId = source.GameProviderId,
-				GameProviderCode = source.GameProviderCode,
-				SubGameProviderCode = source.SubGameProviderCode,
-				GameProviderConfigurationId = source.GameProviderConfigurationId,
-				GameId = source.GameId,
-				ResellerId = source.ResellerId,
-				ResellerCode = source.ResellerCode,
-				LicenseeId = source.LicenseeId,
-				LicenseeCode = source.LicenseeCode,
-				BrandId = source.BrandId,
-				BrandCode = source.BrandCode,
-				PlayerCode = source.PlayerCode,
-				Username = source.Username,
-				CurrencyCode = source.CurrencyCode,
-				WalletId = source.WalletId,
-				ExternalRoundId = source.ExternalRoundId,
-				ExternalBetId = source.ExternalBetId,
-				ExternalGameId = source.ExternalGameId,
-				ExternalCreatedOn = source.ExternalCreatedOn.ToTimestamp(),
-				ExternalClosedOn = source.ExternalClosedOn.ToTimestamp(),
-				ExternalPayoffOn = source.ExternalPayoffOn.ToTimestamp(),
-				ExternalResettleOn = source.ExternalResettleOn.ToTimestamp(),
-				BetState = source.BetState,
-				BetType = source.BetType,
-				FreeGameState = source.FreeGameState,
-				GambleState = source.GambleState,
-				CashoutState = source.CashoutState,
-				ResettleState = source.ResettleState,
-				JackpotState = source.JackpotState,
-				CurrencyRatio = source.CurrencyRatio,
-				Bet = source.Bet,
-				ValidBet = source.ValidBet,
-				Settle = source.Settle,
-				Commission = source.Commission,
-				Turnover = source.Turnover,
-				WinLoss = source.WinLoss,
-				Jackpot = source.Jackpot,
-				AdditionalData = source.AdditionalData
-			},
-			cancellationToken: HttpContext.RequestAborted)
-			.ConfigureAwait(false);
+		var tasks = new Task[]{
+			Task.Run( ()=>messageSender.PublishAsync(
+				subject: GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest,
+				data: new Common.Protos.GameBetsRapidTestWorkerRequest
+				{
+					GameProviderId = source.GameProviderId,
+					GameProviderCode = source.GameProviderCode,
+					SubGameProviderCode = source.SubGameProviderCode,
+					GameProviderConfigurationId = source.GameProviderConfigurationId,
+					GameId = source.GameId,
+					ResellerId = source.ResellerId,
+					ResellerCode = source.ResellerCode,
+					LicenseeId = source.LicenseeId,
+					LicenseeCode = source.LicenseeCode,
+					BrandId = source.BrandId,
+					BrandCode = source.BrandCode,
+					PlayerCode = source.PlayerCode,
+					Username = source.Username,
+					CurrencyCode = source.CurrencyCode,
+					WalletId = source.WalletId,
+					ExternalRoundId = source.ExternalRoundId,
+					ExternalBetId = source.ExternalBetId,
+					ExternalGameId = source.ExternalGameId,
+					ExternalCreatedOn = source.ExternalCreatedOn.ToTimestamp(),
+					ExternalClosedOn = source.ExternalClosedOn.ToTimestamp(),
+					ExternalPayoffOn = source.ExternalPayoffOn.ToTimestamp(),
+					ExternalResettleOn = source.ExternalResettleOn.ToTimestamp(),
+					BetState = source.BetState,
+					BetType = source.BetType,
+					FreeGameState = source.FreeGameState,
+					GambleState = source.GambleState,
+					CashoutState = source.CashoutState,
+					ResettleState = source.ResettleState,
+					JackpotState = source.JackpotState,
+					CurrencyRatio = source.CurrencyRatio,
+					Bet = source.Bet,
+					ValidBet = source.ValidBet,
+					Settle = source.Settle,
+					Commission = source.Commission,
+					Turnover = source.Turnover,
+					WinLoss = source.WinLoss,
+					Jackpot = source.Jackpot,
+					AdditionalData = source.AdditionalData
+				},
+				cancellationToken: HttpContext.RequestAborted).AsTask()),
+			Task.Run( ()=>messageSender.PublishAsync(
+				subject: GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerExpiryRequest,
+				data: new Common.Protos.GameBetsRapidTestWorkerrExpiryRequest
+				{
+					GameProviderCode = source.GameProviderCode,
+					GameId = source.GameId,
+					ResellerCode = source.ResellerCode,
+					LicenseeCode = source.LicenseeCode,
+					BrandCode = source.BrandCode
+				},
+				cancellationToken: HttpContext.RequestAborted).AsTask()),
+		};
 
-		await messageSender.PublishAsync(
-			subject: GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerExpiryRequest,
-			data: new Common.Protos.GameBetsRapidTestWorkerrExpiryRequest
-			{
-				GameProviderCode = source.GameProviderCode,
-				GameId = source.GameId,
-				ResellerCode = source.ResellerCode,
-				LicenseeCode = source.LicenseeCode,
-				BrandCode = source.BrandCode
-			},
-			cancellationToken: HttpContext.RequestAborted)
-			.ConfigureAwait(false);
+		await Task.WhenAll(tasks).ConfigureAwait(false);
 	}
 }
