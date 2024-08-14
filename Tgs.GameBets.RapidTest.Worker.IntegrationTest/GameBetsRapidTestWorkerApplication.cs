@@ -6,7 +6,7 @@ using OpenTelemetry.Exporter;
 
 namespace Tgs.GameBets.RapidTest.Worker.IntegrationTest;
 
-internal class GameBetsWorkerApplication(Action<IWebHostBuilder>? webHostConfigure = null) : WebApplicationFactory<Program>
+internal class GameBetsRapidTestWorkerApplication(Action<IWebHostBuilder>? webHostConfigure = null) : WebApplicationFactory<Program>
 {
 	protected override void ConfigureWebHost(IWebHostBuilder builder)
 	{
