@@ -4,28 +4,28 @@ using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
 
 namespace Tgs.GameBets.RapidTest.Worker.Core;
 
-internal class RapidTestDispatcher(IServiceProvider serviceProvider) : IRapidTestDispatcher, IDisposable, IAsyncDisposable
+internal class GameBetRapidTestWorkerDispatcher(IServiceProvider serviceProvider) : IGameBetRapidTestWorkerDispatcher, IDisposable, IAsyncDisposable
 {
-	private readonly ConcurrentDictionary<string, RapidTestChannel> _counters = new();
+	private readonly ConcurrentDictionary<string, GameBetRapidTestWorkerChannel> _counters = new();
 	private readonly CancellationTokenSource _cancellationTokenSource = new();
 
 	private bool _disposedValue;
 
-	~RapidTestDispatcher()
+	~GameBetRapidTestWorkerDispatcher()
 	{
 		Dispose(false);
 	}
 
 	public async ValueTask PushCommandAsync(GameBetRapidTestWorkerCommand command, CancellationToken cancellationToken = default)
 	{
+		var key = GetKey(command.ResellerCode, command.LicenseeCode, command.BrandCode, command.GameProviderCode, command.GameId);
 		using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cancellationTokenSource.Token);
-
 		var counter = _counters.GetOrAdd(
-			string.Concat(command.ResellerCode, ":", command.LicenseeCode, ":", command.BrandCode, ":", command.GameProviderCode, ":", command.GameId),
+			key,
 			key =>
 			{
 				var scope = serviceProvider.CreateScope();
-				var newCounter = ActivatorUtilities.CreateInstance<RapidTestChannel>(
+				var newCounter = ActivatorUtilities.CreateInstance<GameBetRapidTestWorkerChannel>(
 					scope.ServiceProvider,
 					key);
 
@@ -57,6 +57,13 @@ internal class RapidTestDispatcher(IServiceProvider serviceProvider) : IRapidTes
 		GC.SuppressFinalize(this);
 	}
 
+	public void ExtendExpiry(string resellerCode, string licenseeCode, string brandCode, string gameProviderCode, int gameId, CancellationToken cancellationToken = default)
+	{
+		var key = GetKey(resellerCode, licenseeCode, brandCode, gameProviderCode, gameId);
+		if (_counters.TryGetValue(key, out var counter))
+			counter.ExtendExpiry();
+	}
+
 	protected virtual void Dispose(bool disposing)
 	{
 		if (!_disposedValue)
@@ -70,4 +77,7 @@ internal class RapidTestDispatcher(IServiceProvider serviceProvider) : IRapidTes
 			_disposedValue = true;
 		}
 	}
+
+	private static string GetKey(string resellerCode, string licenseeCode, string brandCode, string gameProviderCode, int gameId)
+	=> string.Concat(resellerCode, ":", licenseeCode, ":", brandCode, ":", gameProviderCode, ":", gameId);
 }

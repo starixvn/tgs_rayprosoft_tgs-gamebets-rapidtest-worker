@@ -48,12 +48,12 @@ builder.Services.AddSwaggerGen(c =>
 	}
 });
 
-builder.Services.AddGameBetsRapidTestWorker()
+builder.Services
 	.AddOptions<PolicySettingsOptions>()
 	.Configure((options) => builder.Configuration.GetSection("PolicySettings").Bind(options))
 	.Services
-	.AddOptions<ExpireStringsOptions>()
-	.Configure((options) => builder.Configuration.GetSection("ExpireStrings").Bind(options))
+	.AddOptions<GameBetRapidTestWorkerSettingsOptions>()
+	.Configure((options) => builder.Configuration.GetSection("GameBetRapidTestWorkerSettings").Bind(options))
 	.Services
 	.AddGameBetsRapidTestClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
@@ -74,7 +74,8 @@ builder.Services.AddGameBetsRapidTestWorker()
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
 		http.BaseAddress = config.GetValue<Uri>("GameBetsRapidTestWorkerConnectionStrings:GameBetsWorkerClientBaseUrl");
-	}));
+	}))
+	.AddGameBetsRapidTestWorkerCore();
 
 builder.Services
 	.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with
@@ -85,9 +86,11 @@ builder.Services
 	.AddMessageQueue()
 	.AddNatsMessageQueue(config => config
 	.ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
-	.AddHandler<GameBetsRapidTestWorkerMessageHandler>(Tgs.GameBets.RapidTest.Worker.Common.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest, Tgs.GameBets.RapidTest.Worker.Common.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest))
+	.AddHandler<GameBetsRapidTestWorkerMessageHandler>(Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest, Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest)
+	.AddHandler<GameBetsRapidTestWorkerExpiryMessageHandler>(Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerExpiryRequest, Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerExpiryRequest))
 	.ClearAllExchanges()
-	.AddNatsGlobPatternExchange(Tgs.GameBets.RapidTest.Worker.Common.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest);
+	.AddNatsGlobPatternExchange(Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest)
+	.AddNatsGlobPatternExchange(Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerExpiryRequest);
 
 builder.Services
 	.AddOpenTelemetry()

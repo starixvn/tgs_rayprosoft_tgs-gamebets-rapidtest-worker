@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Tgs.ServiceUtility;
-using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
 
 namespace Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
 
@@ -48,11 +47,51 @@ internal class GameBetRapidTestWorkerCommandService(
 
 		if (!isUpdate)
 		{
-			logger.LogInformation("LogOn:{logOn} Message:This game round data has not changed.", DateTime.Now.ToString("o"));
+			logger.LogInformation("{logInformation}",
+				new
+				{
+					LogOn = DateTime.Now.ToString("u"),
+					Data = new
+					{
+						command.GameProviderCode,
+						command.SubGameProviderCode,
+						command.GameId,
+						command.ResellerCode,
+						command.LicenseeCode,
+						command.BrandCode,
+						command.PlayerCode,
+						command.Username,
+						command.WalletId,
+						command.ExternalRoundId,
+						command.ExternalBetId,
+						ExternalCreatedOn = command.ExternalCreatedOn.ToString("u")
+					},
+					Message = "This game round data has not changed."
+				});
 			return;
 		}
 
-		logger.LogInformation("LogOn:{logOn} Message:This game round data changes.", DateTime.Now.ToString("o"));
+		logger.LogInformation("{logInformation}",
+			new
+			{
+				LogOn = DateTime.Now.ToString("u"),
+				Data = new
+				{
+					command.GameProviderCode,
+					command.SubGameProviderCode,
+					command.GameId,
+					command.ResellerCode,
+					command.LicenseeCode,
+					command.BrandCode,
+					command.PlayerCode,
+					command.Username,
+					command.WalletId,
+					command.ExternalRoundId,
+					command.ExternalBetId,
+					ExternalCreatedOn = command.ExternalCreatedOn.ToString("u")
+				},
+				Message = "This game round data changes."
+			});
 
 		var id = await gameRoundService.GetAsync(
 			query: new GameRoundCommand(

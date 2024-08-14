@@ -1,11 +1,9 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using Tgs.ServiceUtility;
-using Valhalla.MessageQueue;
-using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
-using Tgs.GameBets.Worker.Client;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Logging;
 using Polly;
+using Tgs.GameBets.Worker.Client;
+
+using Tgs.ServiceUtility;
 
 namespace Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
 

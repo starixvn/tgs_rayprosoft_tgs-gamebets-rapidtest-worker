@@ -103,19 +103,29 @@ internal class GameBetRapidTestCommandService(
 			.WaitAndRetryAsync(
 				retryCount: retryCount,
 				retryAttempt => TimeSpan.FromSeconds(Math.Pow(retrySeconds, retryAttempt)),
-				onRetry: (exception, retryTime, retryCount, context) => logger.LogWarning(exception, "LogOn:{logOn} Exception:{exception} RetryTime:{retryTime} RetryCount:{retryCount} Source:{source}",
-					DateTime.Now.ToString("o"),
-					exception.Message,
-					retryTime,
-					retryCount,
+				onRetry: (exception, retryTime, retryCount, context) => logger.LogWarning(exception, "{logWarning}",
 					new
 					{
-						source.GameProviderCode,
-						source.GameId,
-						source.PlayerCode,
-						source.WalletId,
-						source.ExternalRoundId,
-						source.ExternalBetId
+						LogOn = DateTime.Now.ToString("u"),
+						RetryTime = retryTime,
+						RetryCount = retryCount,
+						Data = new
+						{
+							source.GameProviderCode,
+							source.SubGameProviderCode,
+							source.GameId,
+							source.ResellerCode,
+							source.LicenseeCode,
+							source.BrandCode,
+							source.PlayerCode,
+							source.Username,
+							source.CurrencyCode,
+							source.WalletId,
+							source.ExternalRoundId,
+							source.ExternalBetId,
+							source.ExternalGameId
+						},
+						exception.Message
 					}));
 
 		return await retryPolicy.ExecuteAsync(() => client.GameBetRapidTestCommandAsync(

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using Tgs.GameBets.RapidTest.Worker.Core;
 using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
 
@@ -8,28 +9,34 @@ namespace Tgs.GameBets.RapidTest.Worker.Messages;
 
 public class GameBetsRapidTestWorkerMessageHandler(
 	ILogger<GameBetsRapidTestWorkerMessageHandler> logger,
-	IRapidTestDispatcher dispatcher) : IMessageHandler<Common.Protos.GameBetsRapidTestWorkerRequest>
+	IGameBetRapidTestWorkerDispatcher dispatcher) : IMessageHandler<Common.Protos.GameBetsRapidTestWorkerRequest>
 {
 	public ValueTask HandleAsync(string subject, Common.Protos.GameBetsRapidTestWorkerRequest data, IEnumerable<MessageHeaderValue>? headerValues, CancellationToken cancellationToken = default)
 	{
-		logger.LogInformation("LogOn:{logOn} Subject:{subject} Mesaage:This message has been received.({data})",
-			DateTime.Now.ToString("o"),
-			subject,
-			new
+		logger.LogInformation("{logInformation}",
+			JsonSerializer.Serialize(new
 			{
-				data.GameProviderCode,
-				data.SubGameProviderCode,
-				data.GameId,
-				data.ResellerCode,
-				data.LicenseeCode,
-				data.BrandCode,
-				data.PlayerCode,
-				data.Username,
-				WalletId = data.WalletId.ToGuid(),
-				data.ExternalRoundId,
-				data.ExternalBetId,
-				ExternalCreatedOn = data.ExternalCreatedOn.ToDateTimeOffset()
-			});
+				LogOn = DateTime.Now.ToString("u"),
+				Subject = subject,
+				Data = new
+				{
+					data.GameProviderCode,
+					data.SubGameProviderCode,
+					data.GameId,
+					data.ResellerCode,
+					data.LicenseeCode,
+					data.BrandCode,
+					data.PlayerCode,
+					data.Username,
+					data.CurrencyCode,
+					WalletId = data.WalletId.ToGuid(),
+					data.ExternalRoundId,
+					data.ExternalBetId,
+					data.ExternalGameId,
+					ExternalCreatedOn = data.ExternalCreatedOn.ToDateTimeOffset().ToString("u")
+				},
+				Message = "This receive message handler."
+			}));
 
 		var betState = data.BetState switch
 		{
@@ -75,7 +82,11 @@ public class GameBetsRapidTestWorkerMessageHandler(
 			_ => GameBets.Common.Enums.ResettleState.None
 		};
 
-		var jackpotState = GameBets.Common.Enums.JackpotState.None;
+		var jackpotState = data.JackpotState switch
+		{
+			Common.Protos.JackpotState.Jackpot => GameBets.Common.Enums.JackpotState.Jackpot,
+			_ => GameBets.Common.Enums.JackpotState.None
+		};
 
 		return dispatcher.PushCommandAsync(
 			command: new GameBetRapidTestWorkerCommand(
