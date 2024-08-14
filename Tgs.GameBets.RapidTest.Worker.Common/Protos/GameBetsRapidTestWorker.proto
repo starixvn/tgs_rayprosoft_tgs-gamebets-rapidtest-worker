@@ -91,6 +91,14 @@ message GameBetsRapidTestWorkerRequest {
 	string additional_data = 38;
 }
 
+message GameBetsRapidTestWorkerrExpiryRequest {
+    string game_provider_code = 1;
+    int32 game_id = 2;
+    string reseller_code = 3;
+    string licensee_code = 4;
+    string brand_code = 5;
+}
+
 // 注單狀態
 enum BetState{
     //等待中: 我們交易員因為可能因為賠率的轉換等因素，還未接受這張注單。

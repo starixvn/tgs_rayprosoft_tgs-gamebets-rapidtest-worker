@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\GameBetsRapidTestWorker.proto" />
+    <Protobuf Include="Protos\GameBetsRapidTestWorker.proto" GrpcServices="None" />
   </ItemGroup>
 
 </Project>

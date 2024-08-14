@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameBets.RapidTest.Work
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameBets.RapidTest.Worker.Core.UnitTest", "Tgs.GameBets.RapidTest.Worker.Core.UnitTest\Tgs.GameBets.RapidTest.Worker.Core.UnitTest.csproj", "{FE7F093D-4257-43EE-8630-11F6AE38D7F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameBets.RapidTest.Worker.Common", "Tgs.GameBets.RapidTest.Worker.Common\Tgs.GameBets.RapidTest.Worker.Common.csproj", "{201C410D-424D-4C64-A586-34ACA92D946F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameBets.RapidTest.Worker.Common", "Tgs.GameBets.RapidTest.Worker.Common\Tgs.GameBets.RapidTest.Worker.Common.csproj", "{201C410D-424D-4C64-A586-34ACA92D946F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameBets.RapidTest.Worker.Client", "Tgs.GameBets.RapidTest.Worker.Client\Tgs.GameBets.RapidTest.Worker.Client.csproj", "{407E2977-6D73-4F9D-8159-223E8C102833}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameBets.RapidTest.Worker.Client", "Tgs.GameBets.RapidTest.Worker.Client\Tgs.GameBets.RapidTest.Worker.Client.csproj", "{407E2977-6D73-4F9D-8159-223E8C102833}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameBets.RapidTest.Worker.IntegrationTest", "Tgs.GameBets.RapidTest.Worker.IntegrationTest\Tgs.GameBets.RapidTest.Worker.IntegrationTest.csproj", "{CEDF352E-F9C8-428C-BFC0-21AF8F377A5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{407E2977-6D73-4F9D-8159-223E8C102833}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{407E2977-6D73-4F9D-8159-223E8C102833}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{407E2977-6D73-4F9D-8159-223E8C102833}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEDF352E-F9C8-428C-BFC0-21AF8F377A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEDF352E-F9C8-428C-BFC0-21AF8F377A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEDF352E-F9C8-428C-BFC0-21AF8F377A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEDF352E-F9C8-428C-BFC0-21AF8F377A5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

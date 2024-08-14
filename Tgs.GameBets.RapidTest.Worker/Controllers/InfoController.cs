@@ -15,8 +15,8 @@ public class InfoController : ControllerBase
 	[HttpGet]
 	public async Task<object> GetAsync(
 		[FromServices] IWebHostEnvironment hostingEnvironment,
-		[FromServices] IOptions<PolicySettingsOptions> policySettingsOptions,
-		[FromServices] IOptions<ExpireStringsOptions> expireStringsOptions)
+		[FromServices] IOptions<GameBetRapidTestWorkerSettingsOptions> rapidTestWorkerSettingsOptions,
+		[FromServices] IOptions<PolicySettingsOptions> policySettingsOptions)
 	{
 		var hostName = Dns.GetHostName();
 		var hostEntry = await Dns.GetHostEntryAsync(hostName).ConfigureAwait(false);
@@ -32,8 +32,8 @@ public class InfoController : ControllerBase
 			OsVersion = $"{Environment.OSVersion}",
 			Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(),
 			ProcessCount = Environment.ProcessorCount,
-			PolicySettings = policySettingsOptions.Value,
-			ExpireStrings = expireStringsOptions.Value
+			RapidTestWorkerSettingsOptions = rapidTestWorkerSettingsOptions.Value,
+			PolicySettingsOptions = policySettingsOptions.Value
 		};
 	}
 }

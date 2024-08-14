@@ -11,5 +11,5 @@ public static class ServiceCollectionExtensions
 		.RegisterAllServiceUtilityTypes(
 			Assembly.GetExecutingAssembly(),
 			ServiceLifetime.Transient)
-		.AddSingleton<IRapidTestDispatcher, RapidTestDispatcher>();
+		.AddSingleton<IGameBetRapidTestWorkerDispatcher, GameBetRapidTestWorkerDispatcher>();
 }
