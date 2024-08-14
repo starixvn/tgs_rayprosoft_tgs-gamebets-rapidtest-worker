@@ -87,7 +87,7 @@ builder.Services
 	.AddNatsMessageQueue(config => config
 	.ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
 	.AddHandler<GameBetsRapidTestWorkerMessageHandler>(Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest, Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest)
-	.AddHandler<GameBetsRapidTestWorkerExpiryMessageHandler>(Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerExpiryRequest, Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerExpiryRequest))
+	.AddHandler<GameBetsRapidTestWorkerExpiryMessageHandler>(Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerExpiryRequest, string.Concat(Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerExpiryRequest, ".", Environment.MachineName)))
 	.ClearAllExchanges()
 	.AddNatsGlobPatternExchange(Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerRequest)
 	.AddNatsGlobPatternExchange(Tgs.GameBets.RapidTest.Worker.GameBetsRapidTestWorkerNatsConst.GameBetsRapidTestWorkerExpiryRequest);
