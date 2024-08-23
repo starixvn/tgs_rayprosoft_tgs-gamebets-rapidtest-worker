@@ -21,9 +21,9 @@ builder.Logging
 		options.ParseStateValues = true;
 		_ = options.AddFluentdForwardExporter(fluentOptions =>
 		{
-			var nodeIp = builder.Configuration.GetValue<string>("NODE_IP")!;
+			var nodeIp = builder.Configuration.GetValue<string>("Otel:NodeIp")!;
 			fluentOptions.Host = nodeIp;
-			fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME")!;
+			fluentOptions.Tag = builder.Configuration.GetValue<string>("Otel:ServiceName")!;
 			fluentOptions.UseMessagePack();
 		});
 	});
@@ -94,7 +94,8 @@ builder.Services
 
 builder.Services
 	.AddOpenTelemetry()
-	.WithTracing(builder => builder
+	.ConfigureResource(_ => _.AddService(builder.Configuration.GetValue<string>("Otel:ServiceName")!))
+	.WithTracing(tracerProviderBuilder => tracerProviderBuilder
 		.SetResourceBuilder(ResourceBuilder.CreateDefault()
 			.AddEnvironmentVariableDetector())
 		.AddSource("Tgs.*")
@@ -105,7 +106,7 @@ builder.Services
 		.AddGrpcClientInstrumentation()
 		.AddGrpcCoreInstrumentation()
 		.AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
-		.AddOtlpExporter())
+		.AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("Otel:Collector")!))
 	.WithMetrics(meterBuiler => meterBuiler
 	.SetResourceBuilder(ResourceBuilder.CreateDefault()
 	.AddEnvironmentVariableDetector())
@@ -116,7 +117,7 @@ builder.Services
 	.Configure<AspNetCoreTraceInstrumentationOptions>(options => options.Filter =
 		httpContext => !httpContext.Request.Path.HasValue
 			|| !httpContext.Request.Path.StartsWithSegments("/swagger")
-			&& !httpContext.Request.Path.StartsWithSegments("/healthz")
+			&& !httpContext.Request.Path.StartsWithSegments("/health")
 			&& !httpContext.Request.Path.StartsWithSegments("/profiler/")
 			&& !httpContext.Request.Path.StartsWithSegments("/hangfire")
 			&& !httpContext.Request.Path.StartsWithSegments("/metrics")
@@ -135,6 +136,7 @@ _ = app.UseAuthorization();
 
 _ = app.MapControllers();
 
-app.MapHealthChecks("/healthz");
+app.MapHealthChecks("/health");
+app.MapHealthChecks("/");
 
 app.Run();
