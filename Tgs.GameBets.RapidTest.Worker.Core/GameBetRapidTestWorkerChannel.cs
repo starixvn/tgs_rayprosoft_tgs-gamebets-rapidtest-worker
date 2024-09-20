@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
 using System.Threading.Channels;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
-
-using Tgs.ServiceUtility;
 
 namespace Tgs.GameBets.RapidTest.Worker.Core;
 
@@ -18,7 +17,7 @@ internal class GameBetRapidTestWorkerChannel(
 {
 	private static readonly ActivitySource _ActivitySource = new(name: typeof(GameBetRapidTestWorkerChannel).FullName!);
 
-	private readonly Channel<GameBetRapidTestWorkerCommand> _channel = Channel.CreateUnbounded<GameBetRapidTestWorkerCommand>(
+	private readonly Channel<GameBetRapidTestWorkerRequest> _channel = Channel.CreateUnbounded<GameBetRapidTestWorkerRequest>(
 		new UnboundedChannelOptions
 		{
 			SingleReader = true
@@ -74,7 +73,7 @@ internal class GameBetRapidTestWorkerChannel(
 		}
 	}
 
-	public async ValueTask PushCommandAsync(GameBetRapidTestWorkerCommand command, CancellationToken cancellationToken = default)
+	public async ValueTask PushCommandAsync(GameBetRapidTestWorkerRequest command, CancellationToken cancellationToken = default)
 	{
 		using var cts = CancellationTokenSource.CreateLinkedTokenSource(
 			cancellationToken,
@@ -163,9 +162,9 @@ internal class GameBetRapidTestWorkerChannel(
 						}));
 
 					using var scope = serviceProvider.CreateScope();
-					var service = scope.ServiceProvider.GetRequiredService<ICommandService<GameBetRapidTestWorkerCommand>>();
-					await service.ExecuteAsync(
-						command: command,
+					var service = scope.ServiceProvider.GetRequiredService<IMediator>();
+					await service.Send(
+						request: command,
 						cancellationToken: cancellationToken)
 						.ConfigureAwait(false);
 				}

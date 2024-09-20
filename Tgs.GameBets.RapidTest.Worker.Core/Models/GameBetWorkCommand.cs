@@ -1,21 +1,23 @@
 ﻿using System.Text.Json.Nodes;
 
-namespace Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
-
-public record GameBetRapidTestCommand(
-	string GameProviderCode,
-	string SubGameProviderCode,
+namespace Tgs.GameBets.RapidTest.Worker.Core.Models;
+public record GameBetWorkCommand(
+	Guid Id,
+	Guid GameProviderId,
+	Guid GameProviderConfigurationId,
 	int GameId,
-	string ResellerCode,
-	string LicenseeCode,
-	string BrandCode,
+	Guid ResellerId,
+	Guid LicenseeId,
+	Guid BrandId,
 	string PlayerCode,
-	string Username,
 	string CurrencyCode,
 	Guid WalletId,
 	string ExternalRoundId,
 	string ExternalBetId,
-	string ExternalGameId,
+	DateTimeOffset ExternalCreatedOn,
+	DateTimeOffset ExternalClosedOn,
+	DateTimeOffset ExternalPayoffOn,
+	DateTimeOffset ExternalResettleOn,
 	GameBets.Common.Enums.BetState BetState,
 	GameBets.Common.Enums.BetType BetType,
 	GameBets.Common.Enums.FreeGameState FreeGameState,
@@ -27,8 +29,9 @@ public record GameBetRapidTestCommand(
 	decimal Bet,
 	decimal ValidBet,
 	decimal Settle,
-	decimal Commission,
-	decimal Turnover,
 	decimal WinLoss,
+	decimal Turnover,
+	decimal Commission,
+	decimal Contribute,
 	decimal Jackpot,
 	JsonNode AdditionalData);

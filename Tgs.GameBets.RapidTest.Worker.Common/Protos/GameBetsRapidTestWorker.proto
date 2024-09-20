@@ -81,7 +81,7 @@ message GameBetsRapidTestWorkerRequest {
     phoenix.protobuf.DecimalValue settle = 33;
     // 傭金
     phoenix.protobuf.DecimalValue commission = 34;
-    // 遊戲平台有效投注
+    // 流水(依照遊戲商提供流水,如遊戲商未提供預設有效下注)
     phoenix.protobuf.DecimalValue turnover = 35;
     // 玩家損益/淨利
     phoenix.protobuf.DecimalValue win_loss = 36;
@@ -89,6 +89,8 @@ message GameBetsRapidTestWorkerRequest {
 	phoenix.protobuf.DecimalValue jackpot = 37;
     // 附加數據
 	string additional_data = 38;
+    // 貢獻/彩金貢獻
+    phoenix.protobuf.DecimalValue contribute = 39;
 }
 
 message GameBetsRapidTestWorkerrExpiryRequest {

@@ -1,14 +1,15 @@
 ﻿using System.Text.Json.Nodes;
 
-namespace Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
+namespace Tgs.GameBets.RapidTest.Worker.Core.Models;
 public record GameRoundCommand(
+	Guid Id,
 	Guid GameProviderId,
 	Guid GameProviderConfigurationId,
 	int GameId,
 	Guid BrandId,
 	string PlayerCode,
-	Guid WalletId,
 	string CurrencyCode,
+	Guid WalletId,
 	string ExternalBetId,
 	DateTimeOffset ExternalCreatedOn,
 	DateTimeOffset ExternalClosedOn,
@@ -16,7 +17,8 @@ public record GameRoundCommand(
 	decimal Bet,
 	decimal ValidBet,
 	decimal Settle,
-	decimal Commission,
+	decimal WinLoss,
 	decimal Turnover,
-	decimal PlayerWinLoss,
-	JsonNode AdditionalData);
+	decimal Commission,
+	JsonNode AdditionalData,
+	DateTimeOffset CreatedOn);

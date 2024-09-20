@@ -104,14 +104,16 @@ public record GameBetRapidTestWorkerHandleViewModel
 	[DefaultValue(type: typeof(decimal), value: "4")]
 	public decimal Settle { get; init; }
 	[Required]
-	[DefaultValue(type: typeof(decimal), value: "0")]
-	public decimal Commission { get; init; }
+	[DefaultValue(type: typeof(decimal), value: "2")]
+	public decimal WinLoss { get; init; }
 	[Required]
 	[DefaultValue(type: typeof(decimal), value: "2")]
 	public decimal Turnover { get; init; }
 	[Required]
-	[DefaultValue(type: typeof(decimal), value: "2")]
-	public decimal WinLoss { get; init; }
+	[DefaultValue(type: typeof(decimal), value: "0")]
+	public decimal Commission { get; init; }
+	[DefaultValue(type: typeof(decimal), value: "0")]
+	public decimal Contribute { get; init; }
 	[Required]
 	[DefaultValue(type: typeof(decimal), value: "0")]
 	public decimal Jackpot { get; init; }

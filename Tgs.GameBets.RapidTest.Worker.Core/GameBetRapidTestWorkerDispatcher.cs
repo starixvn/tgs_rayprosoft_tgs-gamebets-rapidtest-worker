@@ -16,7 +16,7 @@ internal class GameBetRapidTestWorkerDispatcher(IServiceProvider serviceProvider
 		Dispose(false);
 	}
 
-	public async ValueTask PushCommandAsync(GameBetRapidTestWorkerCommand command, CancellationToken cancellationToken = default)
+	public async ValueTask PushCommandAsync(GameBetRapidTestWorkerRequest command, CancellationToken cancellationToken = default)
 	{
 		var key = GetKey(command.ResellerCode, command.LicenseeCode, command.BrandCode, command.GameProviderCode, command.GameId);
 		using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _cancellationTokenSource.Token);

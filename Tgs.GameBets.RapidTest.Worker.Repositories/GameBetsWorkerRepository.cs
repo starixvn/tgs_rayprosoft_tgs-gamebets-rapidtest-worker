@@ -1,20 +1,20 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Polly;
+using Tgs.GameBets.RapidTest.Worker.Core;
+using Tgs.GameBets.RapidTest.Worker.Core.Models;
 using Tgs.GameBets.Worker.Client;
 
-using Tgs.ServiceUtility;
+namespace Tgs.GameBets.RapidTest.Worker.Repositories;
 
-namespace Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
-
-internal class GameBetCommandService(
-	ILogger<GameBetCommandService> logger,
+internal class GameBetsWorkerRepository(
+	ILogger<GameBetsWorkerRepository> logger,
 	IOptions<PolicySettingsOptions> options,
-	IGameBetsWorkerClient client) : ICommandService<GameBetCommand>
+	IGameBetsWorkerClient client) : IGameBetsWorkerRepository
 {
 	private readonly PolicySettingsOptions _policySettingsOptions = options.Value;
 
-	public async ValueTask ExecuteAsync(GameBetCommand command, CancellationToken cancellationToken = default)
+	public async ValueTask CommandAsync(GameBetWorkCommand command, CancellationToken cancellationToken = default)
 	{
 		if (command.BetState is GameBets.Common.Enums.BetState.Waiting or GameBets.Common.Enums.BetState.Running)
 		{
@@ -100,9 +100,9 @@ internal class GameBetCommandService(
 			Bet = command.Bet,
 			ValidBet = command.ValidBet,
 			Settle = command.Settle,
-			Commission = command.Commission,
-			Turnover = command.Turnover,
 			WinLoss = command.WinLoss,
+			Turnover = command.Turnover,
+			Commission = command.Commission,
 			Jackpot = command.Jackpot,
 			AdditionalData = command.AdditionalData.ToJsonString(),
 		};
