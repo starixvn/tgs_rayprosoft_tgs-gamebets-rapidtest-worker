@@ -50,12 +50,13 @@ public class WorkerController : ControllerBase
 	///				"jackpotState": "None",
 	///				"currencyRatio": 1,
 	///				"bet": 2,
-	///				"validBet": 2,
+	///				"validBet": 1.95,
 	///				"settle": 4,
-	///				"commission": 0,
-	///				"turnover": 2,
 	///				"winLoss": 2,
-	///				"jackpot": 0,
+	///				"turnover": 0.05,
+	///				"commission": 0.1,
+	///				"contribute": 0.01,
+	///				"jackpot": 1,
 	///				"additionalData": "{\"AllBet\": 2, \"GameID\": \"888-1722937124-92240583-21\", \"KindID\": 910, \"Profit\": 2, \"ChairID\": 0, \"Revenue\": 0, \"TableID\": 182020001, \"Accounts\": \"200995_4un4b9l34304\", \"LineCode\": \"200995_GPI\", \"ServerID\": 9101, \"CardValue\": \"0c32050b06001\", \"CellScore\": 2, \"ChannelID\": 200995, \"UserCount\": 1, \"GameEndTime\": \"2024-08-06T17:39:03+08:00\", \"GameStartTime\": \"2024-08-06T17:38:44+08:00\"}"
 	///			}
 	/// </remarks>
@@ -102,9 +103,10 @@ public class WorkerController : ControllerBase
 					Bet = source.Bet,
 					ValidBet = source.ValidBet,
 					Settle = source.Settle,
-					Commission = source.Commission,
-					Turnover = source.Turnover,
 					WinLoss = source.WinLoss,
+					Turnover = source.Turnover,
+					Commission = source.Commission,
+					Contribute = source.Contribute,
 					Jackpot = source.Jackpot,
 					AdditionalData = source.AdditionalData
 				},

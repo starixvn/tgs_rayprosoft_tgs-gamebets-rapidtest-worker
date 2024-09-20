@@ -4,13 +4,9 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-	</PropertyGroup>
-
-	<PropertyGroup>
+		<ServerGarbageCollection>true</ServerGarbageCollection>
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 		<NoWarn>$(NoWarn);1591;0063</NoWarn>
-		<UserSecretsId>c3edba3f-814c-4641-94e3-61c554866d53</UserSecretsId>
-		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,13 +22,14 @@
 		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
 		<PackageReference Include="Tgs.Interceptors" Version="0.2.1" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Tgs.GameBets.RapidTest.Worker.Common\Tgs.GameBets.RapidTest.Worker.Common.csproj" />
-	  <ProjectReference Include="..\Tgs.GameBets.RapidTest.Worker.Core\Tgs.GameBets.RapidTest.Worker.Core.csproj" />
+		<ProjectReference Include="..\Tgs.GameBets.RapidTest.Worker.Common\Tgs.GameBets.RapidTest.Worker.Common.csproj" />
+		<ProjectReference Include="..\Tgs.GameBets.RapidTest.Worker.Core\Tgs.GameBets.RapidTest.Worker.Core.csproj" />
+		<ProjectReference Include="..\Tgs.GameBets.RapidTest.Worker.Repositories\Tgs.GameBets.RapidTest.Worker.Repositories.csproj" />
 	</ItemGroup>
 
 </Project>

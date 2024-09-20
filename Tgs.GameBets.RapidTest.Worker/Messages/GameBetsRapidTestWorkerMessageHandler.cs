@@ -89,7 +89,7 @@ public class GameBetsRapidTestWorkerMessageHandler(
 		};
 
 		return dispatcher.PushCommandAsync(
-			command: new GameBetRapidTestWorkerCommand(
+			command: new GameBetRapidTestWorkerRequest(
 				GameProviderId: data.GameProviderId.ToGuid(),
 				GameProviderCode: data.GameProviderCode,
 				SubGameProviderCode: data.SubGameProviderCode,
@@ -123,9 +123,10 @@ public class GameBetsRapidTestWorkerMessageHandler(
 				Bet: data.Bet.ToDecimal().GetValueOrDefault(0.0m),
 				ValidBet: data.ValidBet.ToDecimal().GetValueOrDefault(0.0m),
 				Settle: data.Settle.ToDecimal().GetValueOrDefault(0.0m),
-				Commission: data.Commission.ToDecimal().GetValueOrDefault(0.0m),
-				Turnover: data.Turnover.ToDecimal().GetValueOrDefault(0.0m),
 				WinLoss: data.WinLoss.ToDecimal().GetValueOrDefault(0.0m),
+				Turnover: data.Turnover.ToDecimal().GetValueOrDefault(0.0m),
+				Commission: data.Commission.ToDecimal().GetValueOrDefault(0.0m),
+				Contribute: data.Contribute.ToDecimal().GetValueOrDefault(0.0m),
 				Jackpot: data.Jackpot.ToDecimal().GetValueOrDefault(0.0m),
 				AdditionalData: JsonNode.Parse(data.AdditionalData)!),
 			cancellationToken: cancellationToken);

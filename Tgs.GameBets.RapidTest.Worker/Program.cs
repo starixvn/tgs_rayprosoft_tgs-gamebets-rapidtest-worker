@@ -75,7 +75,8 @@ builder.Services
 		var config = sp.GetRequiredService<IConfiguration>();
 		http.BaseAddress = config.GetValue<Uri>("GameBetsRapidTestWorkerConnectionStrings:GameBetsWorkerClientBaseUrl");
 	}))
-	.AddGameBetsRapidTestWorkerCore();
+	.AddGameBetsRapidTestWorkerCore()
+	.AddGameBetsRapidTestWorkerRepository();
 
 builder.Services
 	.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with

@@ -1,8 +1,9 @@
 ﻿using System.Text.Json.Nodes;
+using MediatR;
 
 namespace Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
 
-public record GameBetRapidTestWorkerCommand(
+public record GameBetRapidTestWorkerRequest(
 	Guid GameProviderId,
 	string GameProviderCode,
 	string SubGameProviderCode,
@@ -36,8 +37,9 @@ public record GameBetRapidTestWorkerCommand(
 	decimal Bet,
 	decimal ValidBet,
 	decimal Settle,
-	decimal Commission,
-	decimal Turnover,
 	decimal WinLoss,
+	decimal Turnover,
+	decimal Commission,
+	decimal Contribute,
 	decimal Jackpot,
-	JsonNode AdditionalData);
+	JsonNode AdditionalData) : IRequest;

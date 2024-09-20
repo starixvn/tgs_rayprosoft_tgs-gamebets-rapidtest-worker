@@ -2,17 +2,18 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
+using Tgs.GameBets.RapidTest.Worker.Core;
 using Tgs.GameBets.Worker.Client;
+using Tgs.GameBets.RapidTest.Worker.Core.Models;
 
-namespace Tgs.GameBets.RapidTest.Worker.Core.UnitTest.ApplicationServices;
+namespace Tgs.GameBets.RapidTest.Worker.Repositories.UnitTest;
 
-public class GameBetCommandServiceUnitTest
+public class GameBetsWorkerRepositoryUnitTest
 {
 	[Fact]
 	public async Task BetState_Is_Waiting()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -20,7 +21,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -48,21 +49,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 0.0m,
-			Commission: 0.0m,
-			Turnover: 0.0m,
 			WinLoss: 0.0m,
+			Turnover: 0.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(0)
@@ -74,7 +76,7 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Running()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -82,7 +84,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -110,21 +112,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 0.0m,
-			Commission: 0.0m,
-			Turnover: 0.0m,
 			WinLoss: 0.0m,
+			Turnover: 0.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(0)
@@ -136,7 +139,7 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Void()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -144,7 +147,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -172,21 +175,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 0.0m,
-			Commission: 0.0m,
-			Turnover: 0.0m,
 			WinLoss: 0.0m,
+			Turnover: 0.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(1)
@@ -232,7 +236,7 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Refund()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -240,7 +244,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -268,21 +272,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 0.0m,
-			Commission: 0.0m,
-			Turnover: 0.0m,
 			WinLoss: 0.0m,
+			Turnover: 0.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(1)
@@ -328,7 +333,7 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Refund_And_Cashout()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -336,7 +341,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -364,21 +369,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 0.0m,
-			Commission: 0.0m,
-			Turnover: 0.0m,
 			WinLoss: 0.0m,
+			Turnover: 0.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(1)
@@ -424,7 +430,7 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Cancel()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -432,7 +438,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -460,21 +466,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 0.0m,
-			Commission: 0.0m,
-			Turnover: 0.0m,
 			WinLoss: 0.0m,
+			Turnover: 0.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(1)
@@ -520,7 +527,7 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Win()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -528,7 +535,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -556,21 +563,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 8.0m,
-			Commission: 0.0m,
-			Turnover: 4.0m,
 			WinLoss: 4.0m,
+			Turnover: 4.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(1)
@@ -616,7 +624,7 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Win_And_FreeGame()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -624,7 +632,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -652,21 +660,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 8.0m,
-			Commission: 0.0m,
-			Turnover: 4.0m,
 			WinLoss: 4.0m,
+			Turnover: 4.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(1)
@@ -712,7 +721,7 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Win_And_Jackpot()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -720,7 +729,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -748,21 +757,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 108.0m,
-			Commission: 0.0m,
-			Turnover: 4.0m,
 			WinLoss: 4.0m,
+			Turnover: 4.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 100.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(1)
@@ -808,7 +818,7 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Loss()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -816,7 +826,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -844,21 +854,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 0.0m,
-			Commission: 0.0m,
-			Turnover: 4.0m,
 			WinLoss: -4.0m,
+			Turnover: 4.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(1)
@@ -904,7 +915,7 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_Draw()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -912,7 +923,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -940,21 +951,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 4.0m,
-			Commission: 0.0m,
-			Turnover: 4.0m,
 			WinLoss: 0.0m,
+			Turnover: 0.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(1)
@@ -1000,7 +1012,7 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_HalfWin()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -1008,7 +1020,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -1036,21 +1048,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 2.0m,
-			Commission: 0.0m,
-			Turnover: 4.0m,
 			WinLoss: -2.0m,
+			Turnover: 4.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(1)
@@ -1096,7 +1109,7 @@ public class GameBetCommandServiceUnitTest
 	[Fact]
 	public async Task BetState_Is_HalfLoss()
 	{
-		var faceLogger = NullLogger<GameBetCommandService>.Instance;
+		var fakeLogger = NullLogger<GameBetsWorkerRepository>.Instance;
 		var fakeOptions = Options.Create(new PolicySettingsOptions
 		{
 			RetryCount = 1,
@@ -1104,7 +1117,7 @@ public class GameBetCommandServiceUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
-		var command = new GameBetCommand(
+		var command = new GameBetWorkCommand(
 			Id: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
@@ -1132,21 +1145,22 @@ public class GameBetCommandServiceUnitTest
 			Bet: 4.0m,
 			ValidBet: 4.0m,
 			Settle: 2.0m,
-			Commission: 0.0m,
-			Turnover: 4.0m,
 			WinLoss: -2.0m,
+			Turnover: 4.0m,
+			Commission: 0.0m,
+			Contribute: 0.0m,
 			Jackpot: 0.0m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
-		var sut = new GameBetCommandService(
-			faceLogger,
+		var sut = new GameBetsWorkerRepository(
+			fakeLogger,
 			fakeOptions,
 			fakeClient);
 
-		await sut.ExecuteAsync(command: command);
+		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
 			.Received(1)

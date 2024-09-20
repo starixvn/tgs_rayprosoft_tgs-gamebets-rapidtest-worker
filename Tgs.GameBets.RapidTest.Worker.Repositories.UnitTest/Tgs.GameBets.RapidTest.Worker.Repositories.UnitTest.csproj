@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="JunitXml.TestLogger" Version="4.0.254" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="NSubstitute" Version="5.1.0" />
+    <PackageReference Include="xunit" Version="2.5.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tgs.GameBets.RapidTest.Worker.Common\Tgs.GameBets.RapidTest.Worker.Common.csproj" />
+    <ProjectReference Include="..\Tgs.GameBets.RapidTest.Worker.Core\Tgs.GameBets.RapidTest.Worker.Core.csproj" />
+    <ProjectReference Include="..\Tgs.GameBets.RapidTest.Worker.Repositories\Tgs.GameBets.RapidTest.Worker.Repositories.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\00.git\tgs-gamebets-rapidtest-worker\Tgs.GameBets.RapidTest.Worker.Repositories.UnitTest\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\00.git\tgs-gamebets-rapidtest-worker\Tgs.GameBets.RapidTest.Worker.Repositories.UnitTest\.editorconfig" />
+  </ItemGroup>
+
+</Project>

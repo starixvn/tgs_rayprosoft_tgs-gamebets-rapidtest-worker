@@ -2,20 +2,21 @@
 using Microsoft.Extensions.Options;
 using Polly;
 using Tgs.GameBets.RapidTest.Client;
-using Tgs.ServiceUtility;
+using Tgs.GameBets.RapidTest.Worker.Core;
+using Tgs.GameBets.RapidTest.Worker.Core.Models;
 
-namespace Tgs.GameBets.RapidTest.Worker.Core.ApplicationServices;
+namespace Tgs.GameBets.RapidTest.Worker.Repositories;
 
-internal class GameBetRapidTestCommandService(
-	ILogger<GameBetRapidTestCommandService> logger,
+internal class GameBetsRapidTestRepository(
+	ILogger<GameBetsRapidTestRepository> logger,
 	IOptions<PolicySettingsOptions> policySettingsOptions,
-	IGameBetsRapidTestClient client) : IGetService<GameBetRapidTestCommand, bool>
+	IGameBetsRapidTestClient client) : IGameBetsRapidTestRepository
 {
 	private readonly PolicySettingsOptions _policySettingsOptions = policySettingsOptions.Value;
 
-	public async ValueTask<bool> GetAsync(GameBetRapidTestCommand query, CancellationToken cancellationToken = default)
+	public async ValueTask<bool> CommandAsync(GameBetRapidTestCommand command, CancellationToken cancellationToken = default)
 	{
-		var betState = query.BetState switch
+		var betState = command.BetState switch
 		{
 			GameBets.Common.Enums.BetState.Running => Common.Enums.BetState.Running,
 			GameBets.Common.Enums.BetState.Void => Common.Enums.BetState.Void,
@@ -29,56 +30,56 @@ internal class GameBetRapidTestCommandService(
 			_ => Common.Enums.BetState.Waiting
 		};
 
-		var betType = query.BetType switch
+		var betType = command.BetType switch
 		{
 			GameBets.Common.Enums.BetType.Normal => Common.Enums.BetType.Normal,
 			_ => Common.Enums.BetType.Normal
 		};
 
-		var freeGameState = query.FreeGameState switch
+		var freeGameState = command.FreeGameState switch
 		{
 			GameBets.Common.Enums.FreeGameState.FreeGame => Common.Enums.FreeGameState.FreeGame,
 			_ => Common.Enums.FreeGameState.None
 		};
 
-		var gambleState = query.GambleState switch
+		var gambleState = command.GambleState switch
 		{
 			GameBets.Common.Enums.GambleState.Gamble => Common.Enums.GambleState.Gamble,
 			_ => Common.Enums.GambleState.None
 		};
 
-		var cashoutState = query.CashoutState switch
+		var cashoutState = command.CashoutState switch
 		{
 			GameBets.Common.Enums.CashoutState.Cashout => Common.Enums.CashoutState.Cashout,
 			_ => Common.Enums.CashoutState.None
 		};
 
-		var resettleState = query.ResettleState switch
+		var resettleState = command.ResettleState switch
 		{
 			GameBets.Common.Enums.ResettleState.Resettle => Common.Enums.ResettleState.Resettle,
 			_ => Common.Enums.ResettleState.None
 		};
 
-		var jackpotState = query.JackpotState switch
+		var jackpotState = command.JackpotState switch
 		{
 			GameBets.Common.Enums.JackpotState.Jackpot => Common.Enums.JackpotState.Jackpot,
 			_ => Common.Enums.JackpotState.None
 		};
 
 		var source = new Common.ViewModels.GameBetRapidTestCommandViewModel(
-			GameProviderCode: query.GameProviderCode,
-			SubGameProviderCode: query.SubGameProviderCode,
-			GameId: query.GameId,
-			ResellerCode: query.ResellerCode,
-			LicenseeCode: query.LicenseeCode,
-			BrandCode: query.BrandCode,
-			PlayerCode: query.PlayerCode,
-			Username: query.Username,
-			CurrencyCode: query.CurrencyCode,
-			WalletId: query.WalletId,
-			ExternalRoundId: query.ExternalRoundId,
-			ExternalBetId: query.ExternalBetId,
-			ExternalGameId: query.ExternalGameId,
+			GameProviderCode: command.GameProviderCode,
+			SubGameProviderCode: command.SubGameProviderCode,
+			GameId: command.GameId,
+			ResellerCode: command.ResellerCode,
+			LicenseeCode: command.LicenseeCode,
+			BrandCode: command.BrandCode,
+			PlayerCode: command.PlayerCode,
+			Username: command.Username,
+			CurrencyCode: command.CurrencyCode,
+			WalletId: command.WalletId,
+			ExternalRoundId: command.ExternalRoundId,
+			ExternalBetId: command.ExternalBetId,
+			ExternalGameId: command.ExternalGameId,
 			BetState: betState,
 			BetType: betType,
 			FreeGameState: freeGameState,
@@ -86,15 +87,15 @@ internal class GameBetRapidTestCommandService(
 			CashoutState: cashoutState,
 			ResettleState: resettleState,
 			JackpotState: jackpotState,
-			CurrencyRatio: query.CurrencyRatio,
-			Bet: query.Bet,
-			ValidBet: query.ValidBet,
-			Settle: query.Settle,
-			Commission: query.Commission,
-			Turnover: query.Turnover,
-			WinLoss: query.WinLoss,
-			Jackpot: query.Jackpot,
-			AdditionalData: query.AdditionalData.ToJsonString());
+			CurrencyRatio: command.CurrencyRatio,
+			Bet: command.Bet,
+			ValidBet: command.ValidBet,
+			Settle: command.Settle,
+			Commission: command.Commission,
+			Turnover: command.Turnover,
+			WinLoss: command.WinLoss,
+			Jackpot: command.Jackpot,
+			AdditionalData: command.AdditionalData.ToJsonString());
 
 		var retryCount = _policySettingsOptions.RetryCount;
 		var retrySeconds = _policySettingsOptions.RetrySeconds;
