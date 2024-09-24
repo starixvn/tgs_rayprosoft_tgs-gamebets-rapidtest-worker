@@ -15,7 +15,7 @@ internal class GameBetMajorRepository(
 {
 	private readonly PolicySettingsOptions _policySettingsOptions = options.Value;
 
-	public async ValueTask<GameBetMajorInfoViewModel> CommandAsync(GameBetMajorCommand command, CancellationToken cancellationToken = default)
+	public async ValueTask<GameBetInfoViewModel> CommandAsync(GameBetMajorCommand command, CancellationToken cancellationToken = default)
 	{
 		var source = new GameBetMajorCommandViewModel
 		{

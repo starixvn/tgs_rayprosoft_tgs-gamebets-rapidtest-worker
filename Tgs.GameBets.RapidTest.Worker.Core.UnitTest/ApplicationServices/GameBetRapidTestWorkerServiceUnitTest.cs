@@ -97,7 +97,7 @@ public class GameBetRapidTestWorkerServiceUnitTest
 
 		var id = Guid.NewGuid();
 		var currentTime = DateTimeOffset.Parse("2023-08-08 12:35:56.000 +0800");
-		var gameBetMajorInfo = new GameBets.Common.ViewModels.GameBetMajorInfoViewModel(
+		var gameBetMajorInfo = new GameBets.Common.ViewModels.GameBetInfoViewModel(
 			Id: id,
 			GameProviderId: request.GameProviderId,
 			GameProviderConfigurationId: request.GameProviderConfigurationId,
@@ -133,7 +133,10 @@ public class GameBetRapidTestWorkerServiceUnitTest
 			CreatedOn: currentTime,
 			ClosedOn: currentTime,
 			UpdatedOn: currentTime,
-			AdditionalData: request.AdditionalData);
+			ResetState: GameBets.Common.Enums.ResetState.None,
+			ResetOn: DateTimeOffset.UnixEpoch,
+			AdditionalData: request.AdditionalData,
+			ExtendedData: new JsonObject { });
 		_ = fakeGameBetMajorRepository.CommandAsync(
 			command: Arg.Is<Models.GameBetMajorCommand>(compare =>
 				compare.GameProviderId == request.GameProviderId &&
