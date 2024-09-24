@@ -2,5 +2,5 @@
 
 public interface IGameBetMajorRepository
 {
-	ValueTask<GameBets.Common.ViewModels.GameBetMajorInfoViewModel> CommandAsync(Models.GameBetMajorCommand command, CancellationToken cancellationToken = default);
+	ValueTask<GameBets.Common.ViewModels.GameBetInfoViewModel> CommandAsync(Models.GameBetMajorCommand command, CancellationToken cancellationToken = default);
 }
