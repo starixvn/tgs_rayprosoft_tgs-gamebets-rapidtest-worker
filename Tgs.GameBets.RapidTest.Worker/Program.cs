@@ -1,13 +1,10 @@
 ﻿using System.Net.Mime;
 using System.Text.Json.Serialization;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NATS.Client.Core;
-using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Tgs.GameBets.RapidTest.Worker;
 using Tgs.GameBets.RapidTest.Worker.Core;
 using Tgs.GameBets.RapidTest.Worker.Messages;
 using Tgs.MessageQueue.Nats.Serializers;
@@ -121,9 +118,7 @@ builder.Services
 		.AddEnvironmentVariableDetector())
 		.AddRuntimeInstrumentation()
 		.AddAspNetCoreInstrumentation()
-		.AddOtlpExporter())
-	.Services
-	.AddTransient(typeof(IPipelineBehavior<,>), typeof(TelemetryBehavior<,>));
+		.AddOtlpExporter());
 
 builder.Services.AddHealthChecks();
 
