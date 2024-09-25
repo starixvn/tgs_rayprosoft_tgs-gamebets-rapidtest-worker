@@ -1,11 +1,13 @@
 ﻿using System.Net.Mime;
 using System.Text.Json.Serialization;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NATS.Client.Core;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Tgs.GameBets.RapidTest.Worker;
 using Tgs.GameBets.RapidTest.Worker.Core;
 using Tgs.GameBets.RapidTest.Worker.Messages;
 using Tgs.MessageQueue.Nats.Serializers;
@@ -101,20 +103,9 @@ builder.Services
 		.AddSource("Tgs.*")
 		.AddSource("TGS.*")
 		.AddSource("Valhalla.*")
-		.AddAspNetCoreInstrumentation()
-		.AddHttpClientInstrumentation()
-		.AddGrpcClientInstrumentation()
-		.AddGrpcCoreInstrumentation()
-		.AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
-		.AddOtlpExporter())
-	.WithMetrics(meterBuiler => meterBuiler
-	.SetResourceBuilder(ResourceBuilder.CreateDefault()
-	.AddEnvironmentVariableDetector())
-	.AddRuntimeInstrumentation()
-	.AddAspNetCoreInstrumentation()
-	.AddOtlpExporter())
-	.Services
-	.Configure<AspNetCoreTraceInstrumentationOptions>(options => options.Filter =
+		.AddSource("MediatR")
+		.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService($"{Environment.OSVersion}"))
+		.AddAspNetCoreInstrumentation(options => options.Filter =
 		httpContext => !httpContext.Request.Path.HasValue
 			|| !httpContext.Request.Path.StartsWithSegments("/swagger")
 			&& !httpContext.Request.Path.StartsWithSegments("/healthz")
@@ -122,8 +113,17 @@ builder.Services
 			&& !httpContext.Request.Path.StartsWithSegments("/hangfire")
 			&& !httpContext.Request.Path.StartsWithSegments("/metrics")
 			&& !filterInstrumentations.Any(ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
-	.AddInterceptionService()
-	.AddServiceUtiltiyInterceptors();
+		.AddHttpClientInstrumentation()
+		.AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
+		.AddOtlpExporter())
+	.WithMetrics(meterBuiler => meterBuiler
+	.SetResourceBuilder(ResourceBuilder.CreateDefault()
+		.AddEnvironmentVariableDetector())
+		.AddRuntimeInstrumentation()
+		.AddAspNetCoreInstrumentation()
+		.AddOtlpExporter())
+	.Services
+	.AddTransient(typeof(IPipelineBehavior<,>), typeof(TelemetryBehavior<,>));
 
 builder.Services.AddHealthChecks();
 
