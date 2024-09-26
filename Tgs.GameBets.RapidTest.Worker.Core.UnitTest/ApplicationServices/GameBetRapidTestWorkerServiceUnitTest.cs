@@ -215,7 +215,7 @@ public class GameBetRapidTestWorkerServiceUnitTest
 			.Received(1)
 			.CommandAsync(
 			command: Arg.Is<Models.GameBetWorkCommand>(compare =>
-				compare.Id == id &&
+				compare.GameBetId == id &&
 				compare.GameProviderId == gameBetMajorInfo.GameProviderId &&
 				compare.GameProviderConfigurationId == gameBetMajorInfo.GameProviderConfigurationId &&
 				compare.GameId == gameBetMajorInfo.GameId &&
@@ -247,7 +247,10 @@ public class GameBetRapidTestWorkerServiceUnitTest
 				compare.Commission == gameBetMajorInfo.Commission &&
 				compare.Contribute == gameBetMajorInfo.Contribute &&
 				compare.Jackpot == gameBetMajorInfo.Jackpot &&
-				compare.AdditionalData != null),
+				compare.CreatedOn == gameBetMajorInfo.CreatedOn &&
+				compare.ClosedOn == gameBetMajorInfo.ClosedOn &&
+				compare.AdditionalData == gameBetMajorInfo.AdditionalData &&
+				compare.ExtendedData == gameBetMajorInfo.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 

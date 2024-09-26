@@ -16,11 +16,6 @@ internal class GameBetsWorkerRepository(
 
 	public async ValueTask CommandAsync(GameBetWorkCommand command, CancellationToken cancellationToken = default)
 	{
-		if (command.BetState is GameBets.Common.Enums.BetState.Waiting or GameBets.Common.Enums.BetState.Running)
-		{
-			return;
-		}
-
 		var betState = command.BetState switch
 		{
 			GameBets.Common.Enums.BetState.Running => GameBets.Worker.Common.Protos.BetState.Running,
@@ -71,9 +66,9 @@ internal class GameBetsWorkerRepository(
 			_ => GameBets.Worker.Common.Protos.JackpotState.None
 		};
 
-		var source = new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
+		var source = new GameBets.Worker.Common.ViewModels.GameBetHandleViewModel
 		{
-			GameBetId = command.Id,
+			GameBetId = command.GameBetId,
 			GameProviderId = command.GameProviderId,
 			GameProviderConfigurationId = command.GameProviderConfigurationId,
 			GameId = command.GameId,
@@ -103,8 +98,12 @@ internal class GameBetsWorkerRepository(
 			WinLoss = command.WinLoss,
 			Turnover = command.Turnover,
 			Commission = command.Commission,
+			Contribute = command.Contribute,
+			CreatedOn = command.CreatedOn,
+			ClosedOn = command.ClosedOn,
 			Jackpot = command.Jackpot,
-			AdditionalData = command.AdditionalData.ToJsonString(),
+			AdditionalData = command.AdditionalData,
+			ExtendedData = command.ExtendedData
 		};
 
 		var retryCount = _policySettingsOptions.RetryCount;

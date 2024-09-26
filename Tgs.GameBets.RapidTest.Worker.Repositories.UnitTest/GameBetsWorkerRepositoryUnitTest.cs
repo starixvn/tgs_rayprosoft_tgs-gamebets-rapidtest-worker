@@ -21,8 +21,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UnixEpoch;
+		var externalPayoffOn = DateTimeOffset.UnixEpoch;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UnixEpoch;
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -32,11 +40,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.UnixEpoch,
-			ExternalPayoffOn: DateTimeOffset.UnixEpoch,
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.Waiting,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -54,10 +62,14 @@ public class GameBetsWorkerRepositoryUnitTest
 			Commission: 0.0m,
 			Contribute: 0.0m,
 			Jackpot: 0.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -67,9 +79,45 @@ public class GameBetsWorkerRepositoryUnitTest
 		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
-			.Received(0)
+			.Received(1)
 			.HandleAsync(
-			source: Arg.Any<GameBets.Worker.Common.ViewModels.WorkerHandleViewModel>(),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.Waiting &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
@@ -84,8 +132,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UnixEpoch;
+		var externalPayoffOn = DateTimeOffset.UnixEpoch;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UnixEpoch;
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -95,11 +151,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.UnixEpoch,
-			ExternalPayoffOn: DateTimeOffset.UnixEpoch,
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.Running,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -117,10 +173,14 @@ public class GameBetsWorkerRepositoryUnitTest
 			Commission: 0.0m,
 			Contribute: 0.0m,
 			Jackpot: 0.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -130,9 +190,45 @@ public class GameBetsWorkerRepositoryUnitTest
 		await sut.CommandAsync(command: command);
 
 		_ = fakeClient
-			.Received(0)
+			.Received(1)
 			.HandleAsync(
-			source: Arg.Any<GameBets.Worker.Common.ViewModels.WorkerHandleViewModel>(),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.Running &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
@@ -147,8 +243,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UtcNow.AddSeconds(-5);
+		var externalPayoffOn = DateTimeOffset.UtcNow;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UtcNow.AddSeconds(-4);
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -158,11 +262,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
-			ExternalPayoffOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.Void,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -180,10 +284,14 @@ public class GameBetsWorkerRepositoryUnitTest
 			Commission: 0.0m,
 			Contribute: 0.0m,
 			Jackpot: 0.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -195,41 +303,43 @@ public class GameBetsWorkerRepositoryUnitTest
 		_ = fakeClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
-			{
-				GameBetId = command.Id,
-				GameProviderId = command.GameProviderId,
-				GameProviderConfigurationId = command.GameProviderConfigurationId,
-				GameId = command.GameId,
-				ResellerId = command.ResellerId,
-				LicenseeId = command.LicenseeId,
-				BrandId = command.BrandId,
-				PlayerCode = command.PlayerCode,
-				CurrencyCode = command.CurrencyCode,
-				WalletId = command.WalletId,
-				ExternalRoundId = command.ExternalRoundId,
-				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn,
-				ExternalClosedOn = command.ExternalClosedOn,
-				ExternalPayoffOn = command.ExternalPayoffOn,
-				ExternalResettleOn = command.ExternalResettleOn,
-				BetState = GameBets.Worker.Common.Protos.BetState.Void,
-				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
-				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
-				GambleState = GameBets.Worker.Common.Protos.GambleState.None,
-				CashoutState = GameBets.Worker.Common.Protos.CashoutState.None,
-				ResettleState = GameBets.Worker.Common.Protos.ResettleState.None,
-				JackpotState = GameBets.Worker.Common.Protos.JackpotState.None,
-				CurrencyRatio = command.CurrencyRatio,
-				Bet = command.Bet,
-				ValidBet = command.ValidBet,
-				Settle = command.Settle,
-				Commission = command.Commission,
-				Turnover = command.Turnover,
-				WinLoss = command.WinLoss,
-				Jackpot = command.Jackpot,
-				AdditionalData = command.AdditionalData.ToJsonString(),
-			}),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.Void &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
@@ -244,8 +354,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UtcNow.AddSeconds(-5);
+		var externalPayoffOn = DateTimeOffset.UtcNow;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UtcNow.AddSeconds(-4);
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -255,11 +373,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
-			ExternalPayoffOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.Refund,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -277,10 +395,14 @@ public class GameBetsWorkerRepositoryUnitTest
 			Commission: 0.0m,
 			Contribute: 0.0m,
 			Jackpot: 0.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -292,41 +414,43 @@ public class GameBetsWorkerRepositoryUnitTest
 		_ = fakeClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
-			{
-				GameBetId = command.Id,
-				GameProviderId = command.GameProviderId,
-				GameProviderConfigurationId = command.GameProviderConfigurationId,
-				GameId = command.GameId,
-				ResellerId = command.ResellerId,
-				LicenseeId = command.LicenseeId,
-				BrandId = command.BrandId,
-				PlayerCode = command.PlayerCode,
-				CurrencyCode = command.CurrencyCode,
-				WalletId = command.WalletId,
-				ExternalRoundId = command.ExternalRoundId,
-				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn,
-				ExternalClosedOn = command.ExternalClosedOn,
-				ExternalPayoffOn = command.ExternalPayoffOn,
-				ExternalResettleOn = command.ExternalResettleOn,
-				BetState = GameBets.Worker.Common.Protos.BetState.Refund,
-				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
-				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
-				GambleState = GameBets.Worker.Common.Protos.GambleState.None,
-				CashoutState = GameBets.Worker.Common.Protos.CashoutState.None,
-				ResettleState = GameBets.Worker.Common.Protos.ResettleState.None,
-				JackpotState = GameBets.Worker.Common.Protos.JackpotState.None,
-				CurrencyRatio = command.CurrencyRatio,
-				Bet = command.Bet,
-				ValidBet = command.ValidBet,
-				Settle = command.Settle,
-				Commission = command.Commission,
-				Turnover = command.Turnover,
-				WinLoss = command.WinLoss,
-				Jackpot = command.Jackpot,
-				AdditionalData = command.AdditionalData.ToJsonString(),
-			}),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.Refund &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
@@ -341,8 +465,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UtcNow.AddSeconds(-5);
+		var externalPayoffOn = DateTimeOffset.UtcNow;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UtcNow.AddSeconds(-4);
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -352,11 +484,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
-			ExternalPayoffOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.Refund,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -374,10 +506,14 @@ public class GameBetsWorkerRepositoryUnitTest
 			Commission: 0.0m,
 			Contribute: 0.0m,
 			Jackpot: 0.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -389,41 +525,43 @@ public class GameBetsWorkerRepositoryUnitTest
 		_ = fakeClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
-			{
-				GameBetId = command.Id,
-				GameProviderId = command.GameProviderId,
-				GameProviderConfigurationId = command.GameProviderConfigurationId,
-				GameId = command.GameId,
-				ResellerId = command.ResellerId,
-				LicenseeId = command.LicenseeId,
-				BrandId = command.BrandId,
-				PlayerCode = command.PlayerCode,
-				CurrencyCode = command.CurrencyCode,
-				WalletId = command.WalletId,
-				ExternalRoundId = command.ExternalRoundId,
-				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn,
-				ExternalClosedOn = command.ExternalClosedOn,
-				ExternalPayoffOn = command.ExternalPayoffOn,
-				ExternalResettleOn = command.ExternalResettleOn,
-				BetState = GameBets.Worker.Common.Protos.BetState.Refund,
-				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
-				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
-				GambleState = GameBets.Worker.Common.Protos.GambleState.None,
-				CashoutState = GameBets.Worker.Common.Protos.CashoutState.Cashout,
-				ResettleState = GameBets.Worker.Common.Protos.ResettleState.None,
-				JackpotState = GameBets.Worker.Common.Protos.JackpotState.None,
-				CurrencyRatio = command.CurrencyRatio,
-				Bet = command.Bet,
-				ValidBet = command.ValidBet,
-				Settle = command.Settle,
-				Commission = command.Commission,
-				Turnover = command.Turnover,
-				WinLoss = command.WinLoss,
-				Jackpot = command.Jackpot,
-				AdditionalData = command.AdditionalData.ToJsonString(),
-			}),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.Refund &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.Cashout &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
@@ -438,8 +576,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UtcNow.AddSeconds(-5);
+		var externalPayoffOn = DateTimeOffset.UtcNow;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UtcNow.AddSeconds(-4);
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -449,11 +595,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
-			ExternalPayoffOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.Cancel,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -471,10 +617,14 @@ public class GameBetsWorkerRepositoryUnitTest
 			Commission: 0.0m,
 			Contribute: 0.0m,
 			Jackpot: 0.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -486,41 +636,43 @@ public class GameBetsWorkerRepositoryUnitTest
 		_ = fakeClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
-			{
-				GameBetId = command.Id,
-				GameProviderId = command.GameProviderId,
-				GameProviderConfigurationId = command.GameProviderConfigurationId,
-				GameId = command.GameId,
-				ResellerId = command.ResellerId,
-				LicenseeId = command.LicenseeId,
-				BrandId = command.BrandId,
-				PlayerCode = command.PlayerCode,
-				CurrencyCode = command.CurrencyCode,
-				WalletId = command.WalletId,
-				ExternalRoundId = command.ExternalRoundId,
-				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn,
-				ExternalClosedOn = command.ExternalClosedOn,
-				ExternalPayoffOn = command.ExternalPayoffOn,
-				ExternalResettleOn = command.ExternalResettleOn,
-				BetState = GameBets.Worker.Common.Protos.BetState.Cancel,
-				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
-				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
-				GambleState = GameBets.Worker.Common.Protos.GambleState.None,
-				CashoutState = GameBets.Worker.Common.Protos.CashoutState.None,
-				ResettleState = GameBets.Worker.Common.Protos.ResettleState.None,
-				JackpotState = GameBets.Worker.Common.Protos.JackpotState.None,
-				CurrencyRatio = command.CurrencyRatio,
-				Bet = command.Bet,
-				ValidBet = command.ValidBet,
-				Settle = command.Settle,
-				Commission = command.Commission,
-				Turnover = command.Turnover,
-				WinLoss = command.WinLoss,
-				Jackpot = command.Jackpot,
-				AdditionalData = command.AdditionalData.ToJsonString(),
-			}),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.Cancel &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
@@ -535,8 +687,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UtcNow.AddSeconds(-5);
+		var externalPayoffOn = DateTimeOffset.UtcNow;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UtcNow.AddSeconds(-4);
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -546,11 +706,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
-			ExternalPayoffOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.Win,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -565,13 +725,17 @@ public class GameBetsWorkerRepositoryUnitTest
 			Settle: 8.0m,
 			WinLoss: 4.0m,
 			Turnover: 4.0m,
-			Commission: 0.0m,
-			Contribute: 0.0m,
+			Commission: 0.1m,
+			Contribute: 0.01m,
 			Jackpot: 0.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -583,41 +747,43 @@ public class GameBetsWorkerRepositoryUnitTest
 		_ = fakeClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
-			{
-				GameBetId = command.Id,
-				GameProviderId = command.GameProviderId,
-				GameProviderConfigurationId = command.GameProviderConfigurationId,
-				GameId = command.GameId,
-				ResellerId = command.ResellerId,
-				LicenseeId = command.LicenseeId,
-				BrandId = command.BrandId,
-				PlayerCode = command.PlayerCode,
-				CurrencyCode = command.CurrencyCode,
-				WalletId = command.WalletId,
-				ExternalRoundId = command.ExternalRoundId,
-				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn,
-				ExternalClosedOn = command.ExternalClosedOn,
-				ExternalPayoffOn = command.ExternalPayoffOn,
-				ExternalResettleOn = command.ExternalResettleOn,
-				BetState = GameBets.Worker.Common.Protos.BetState.Win,
-				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
-				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
-				GambleState = GameBets.Worker.Common.Protos.GambleState.None,
-				CashoutState = GameBets.Worker.Common.Protos.CashoutState.None,
-				ResettleState = GameBets.Worker.Common.Protos.ResettleState.None,
-				JackpotState = GameBets.Worker.Common.Protos.JackpotState.None,
-				CurrencyRatio = command.CurrencyRatio,
-				Bet = command.Bet,
-				ValidBet = command.ValidBet,
-				Settle = command.Settle,
-				Commission = command.Commission,
-				Turnover = command.Turnover,
-				WinLoss = command.WinLoss,
-				Jackpot = command.Jackpot,
-				AdditionalData = command.AdditionalData.ToJsonString(),
-			}),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.Win &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
@@ -632,8 +798,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UtcNow.AddSeconds(-5);
+		var externalPayoffOn = DateTimeOffset.UtcNow;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UtcNow.AddSeconds(-4);
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -643,11 +817,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
-			ExternalPayoffOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.Win,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -662,13 +836,17 @@ public class GameBetsWorkerRepositoryUnitTest
 			Settle: 8.0m,
 			WinLoss: 4.0m,
 			Turnover: 4.0m,
-			Commission: 0.0m,
-			Contribute: 0.0m,
+			Commission: 0.1m,
+			Contribute: 0.01m,
 			Jackpot: 0.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -680,41 +858,43 @@ public class GameBetsWorkerRepositoryUnitTest
 		_ = fakeClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
-			{
-				GameBetId = command.Id,
-				GameProviderId = command.GameProviderId,
-				GameProviderConfigurationId = command.GameProviderConfigurationId,
-				GameId = command.GameId,
-				ResellerId = command.ResellerId,
-				LicenseeId = command.LicenseeId,
-				BrandId = command.BrandId,
-				PlayerCode = command.PlayerCode,
-				CurrencyCode = command.CurrencyCode,
-				WalletId = command.WalletId,
-				ExternalRoundId = command.ExternalRoundId,
-				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn,
-				ExternalClosedOn = command.ExternalClosedOn,
-				ExternalPayoffOn = command.ExternalPayoffOn,
-				ExternalResettleOn = command.ExternalResettleOn,
-				BetState = GameBets.Worker.Common.Protos.BetState.Win,
-				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
-				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.FreeGame,
-				GambleState = GameBets.Worker.Common.Protos.GambleState.None,
-				CashoutState = GameBets.Worker.Common.Protos.CashoutState.None,
-				ResettleState = GameBets.Worker.Common.Protos.ResettleState.None,
-				JackpotState = GameBets.Worker.Common.Protos.JackpotState.None,
-				CurrencyRatio = command.CurrencyRatio,
-				Bet = command.Bet,
-				ValidBet = command.ValidBet,
-				Settle = command.Settle,
-				Commission = command.Commission,
-				Turnover = command.Turnover,
-				WinLoss = command.WinLoss,
-				Jackpot = command.Jackpot,
-				AdditionalData = command.AdditionalData.ToJsonString(),
-			}),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.Win &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.FreeGame &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
@@ -729,8 +909,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UtcNow.AddSeconds(-5);
+		var externalPayoffOn = DateTimeOffset.UtcNow;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UtcNow.AddSeconds(-4);
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -740,11 +928,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
-			ExternalPayoffOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.Win,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -759,13 +947,17 @@ public class GameBetsWorkerRepositoryUnitTest
 			Settle: 108.0m,
 			WinLoss: 4.0m,
 			Turnover: 4.0m,
-			Commission: 0.0m,
-			Contribute: 0.0m,
+			Commission: 0.1m,
+			Contribute: 0.01m,
 			Jackpot: 100.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -777,41 +969,43 @@ public class GameBetsWorkerRepositoryUnitTest
 		_ = fakeClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
-			{
-				GameBetId = command.Id,
-				GameProviderId = command.GameProviderId,
-				GameProviderConfigurationId = command.GameProviderConfigurationId,
-				GameId = command.GameId,
-				ResellerId = command.ResellerId,
-				LicenseeId = command.LicenseeId,
-				BrandId = command.BrandId,
-				PlayerCode = command.PlayerCode,
-				CurrencyCode = command.CurrencyCode,
-				WalletId = command.WalletId,
-				ExternalRoundId = command.ExternalRoundId,
-				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn,
-				ExternalClosedOn = command.ExternalClosedOn,
-				ExternalPayoffOn = command.ExternalPayoffOn,
-				ExternalResettleOn = command.ExternalResettleOn,
-				BetState = GameBets.Worker.Common.Protos.BetState.Win,
-				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
-				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
-				GambleState = GameBets.Worker.Common.Protos.GambleState.None,
-				CashoutState = GameBets.Worker.Common.Protos.CashoutState.None,
-				ResettleState = GameBets.Worker.Common.Protos.ResettleState.None,
-				JackpotState = GameBets.Worker.Common.Protos.JackpotState.Jackpot,
-				CurrencyRatio = command.CurrencyRatio,
-				Bet = command.Bet,
-				ValidBet = command.ValidBet,
-				Settle = command.Settle,
-				Commission = command.Commission,
-				Turnover = command.Turnover,
-				WinLoss = command.WinLoss,
-				Jackpot = command.Jackpot,
-				AdditionalData = command.AdditionalData.ToJsonString(),
-			}),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.Win &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.Jackpot &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
@@ -826,8 +1020,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UtcNow.AddSeconds(-5);
+		var externalPayoffOn = DateTimeOffset.UtcNow;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UtcNow.AddSeconds(-4);
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -837,11 +1039,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
-			ExternalPayoffOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.Loss,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -856,13 +1058,17 @@ public class GameBetsWorkerRepositoryUnitTest
 			Settle: 0.0m,
 			WinLoss: -4.0m,
 			Turnover: 4.0m,
-			Commission: 0.0m,
-			Contribute: 0.0m,
+			Commission: 0.1m,
+			Contribute: 0.01m,
 			Jackpot: 0.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -874,41 +1080,43 @@ public class GameBetsWorkerRepositoryUnitTest
 		_ = fakeClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
-			{
-				GameBetId = command.Id,
-				GameProviderId = command.GameProviderId,
-				GameProviderConfigurationId = command.GameProviderConfigurationId,
-				GameId = command.GameId,
-				ResellerId = command.ResellerId,
-				LicenseeId = command.LicenseeId,
-				BrandId = command.BrandId,
-				PlayerCode = command.PlayerCode,
-				CurrencyCode = command.CurrencyCode,
-				WalletId = command.WalletId,
-				ExternalRoundId = command.ExternalRoundId,
-				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn,
-				ExternalClosedOn = command.ExternalClosedOn,
-				ExternalPayoffOn = command.ExternalPayoffOn,
-				ExternalResettleOn = command.ExternalResettleOn,
-				BetState = GameBets.Worker.Common.Protos.BetState.Loss,
-				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
-				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
-				GambleState = GameBets.Worker.Common.Protos.GambleState.None,
-				CashoutState = GameBets.Worker.Common.Protos.CashoutState.None,
-				ResettleState = GameBets.Worker.Common.Protos.ResettleState.None,
-				JackpotState = GameBets.Worker.Common.Protos.JackpotState.None,
-				CurrencyRatio = command.CurrencyRatio,
-				Bet = command.Bet,
-				ValidBet = command.ValidBet,
-				Settle = command.Settle,
-				Commission = command.Commission,
-				Turnover = command.Turnover,
-				WinLoss = command.WinLoss,
-				Jackpot = command.Jackpot,
-				AdditionalData = command.AdditionalData.ToJsonString(),
-			}),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.Loss &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
@@ -923,8 +1131,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UtcNow.AddSeconds(-5);
+		var externalPayoffOn = DateTimeOffset.UtcNow;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UtcNow.AddSeconds(-4);
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -934,11 +1150,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
-			ExternalPayoffOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.Draw,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -953,13 +1169,17 @@ public class GameBetsWorkerRepositoryUnitTest
 			Settle: 4.0m,
 			WinLoss: 0.0m,
 			Turnover: 0.0m,
-			Commission: 0.0m,
-			Contribute: 0.0m,
+			Commission: 0.1m,
+			Contribute: 0.01m,
 			Jackpot: 0.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -971,41 +1191,43 @@ public class GameBetsWorkerRepositoryUnitTest
 		_ = fakeClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
-			{
-				GameBetId = command.Id,
-				GameProviderId = command.GameProviderId,
-				GameProviderConfigurationId = command.GameProviderConfigurationId,
-				GameId = command.GameId,
-				ResellerId = command.ResellerId,
-				LicenseeId = command.LicenseeId,
-				BrandId = command.BrandId,
-				PlayerCode = command.PlayerCode,
-				CurrencyCode = command.CurrencyCode,
-				WalletId = command.WalletId,
-				ExternalRoundId = command.ExternalRoundId,
-				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn,
-				ExternalClosedOn = command.ExternalClosedOn,
-				ExternalPayoffOn = command.ExternalPayoffOn,
-				ExternalResettleOn = command.ExternalResettleOn,
-				BetState = GameBets.Worker.Common.Protos.BetState.Draw,
-				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
-				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
-				GambleState = GameBets.Worker.Common.Protos.GambleState.None,
-				CashoutState = GameBets.Worker.Common.Protos.CashoutState.None,
-				ResettleState = GameBets.Worker.Common.Protos.ResettleState.None,
-				JackpotState = GameBets.Worker.Common.Protos.JackpotState.None,
-				CurrencyRatio = command.CurrencyRatio,
-				Bet = command.Bet,
-				ValidBet = command.ValidBet,
-				Settle = command.Settle,
-				Commission = command.Commission,
-				Turnover = command.Turnover,
-				WinLoss = command.WinLoss,
-				Jackpot = command.Jackpot,
-				AdditionalData = command.AdditionalData.ToJsonString(),
-			}),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.Draw &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
@@ -1020,8 +1242,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UtcNow.AddSeconds(-5);
+		var externalPayoffOn = DateTimeOffset.UtcNow;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UtcNow.AddSeconds(-4);
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -1031,11 +1261,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
-			ExternalPayoffOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.HalfWin,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -1050,13 +1280,17 @@ public class GameBetsWorkerRepositoryUnitTest
 			Settle: 2.0m,
 			WinLoss: -2.0m,
 			Turnover: 4.0m,
-			Commission: 0.0m,
-			Contribute: 0.0m,
+			Commission: 0.1m,
+			Contribute: 0.01m,
 			Jackpot: 0.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -1068,41 +1302,43 @@ public class GameBetsWorkerRepositoryUnitTest
 		_ = fakeClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
-			{
-				GameBetId = command.Id,
-				GameProviderId = command.GameProviderId,
-				GameProviderConfigurationId = command.GameProviderConfigurationId,
-				GameId = command.GameId,
-				ResellerId = command.ResellerId,
-				LicenseeId = command.LicenseeId,
-				BrandId = command.BrandId,
-				PlayerCode = command.PlayerCode,
-				CurrencyCode = command.CurrencyCode,
-				WalletId = command.WalletId,
-				ExternalRoundId = command.ExternalRoundId,
-				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn,
-				ExternalClosedOn = command.ExternalClosedOn,
-				ExternalPayoffOn = command.ExternalPayoffOn,
-				ExternalResettleOn = command.ExternalResettleOn,
-				BetState = GameBets.Worker.Common.Protos.BetState.HalfWin,
-				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
-				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
-				GambleState = GameBets.Worker.Common.Protos.GambleState.None,
-				CashoutState = GameBets.Worker.Common.Protos.CashoutState.None,
-				ResettleState = GameBets.Worker.Common.Protos.ResettleState.None,
-				JackpotState = GameBets.Worker.Common.Protos.JackpotState.None,
-				CurrencyRatio = command.CurrencyRatio,
-				Bet = command.Bet,
-				ValidBet = command.ValidBet,
-				Settle = command.Settle,
-				Commission = command.Commission,
-				Turnover = command.Turnover,
-				WinLoss = command.WinLoss,
-				Jackpot = command.Jackpot,
-				AdditionalData = command.AdditionalData.ToJsonString(),
-			}),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.HalfWin &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 
@@ -1117,8 +1353,16 @@ public class GameBetsWorkerRepositoryUnitTest
 		});
 		var fakeClient = Substitute.For<IGameBetsWorkerClient>();
 
+		var externalCreatedOn = DateTimeOffset.UtcNow.AddMinutes(-5);
+		var externalRoundId = externalCreatedOn.ToUnixTimeMilliseconds().ToString();
+		var externalBetId = Guid.NewGuid().ToString();
+		var externalClosedOn = DateTimeOffset.UtcNow.AddSeconds(-5);
+		var externalPayoffOn = DateTimeOffset.UtcNow;
+		var createdOn = DateTimeOffset.UtcNow.AddMinutes(-4);
+		var closedOn = DateTimeOffset.UtcNow.AddSeconds(-4);
+
 		var command = new GameBetWorkCommand(
-			Id: Guid.NewGuid(),
+			GameBetId: Guid.NewGuid(),
 			GameProviderId: Guid.NewGuid(),
 			GameProviderConfigurationId: Guid.NewGuid(),
 			GameId: 1000017,
@@ -1128,11 +1372,11 @@ public class GameBetsWorkerRepositoryUnitTest
 			PlayerCode: "4ucmqplxb029",
 			CurrencyCode: "CNY",
 			WalletId: Guid.NewGuid(),
-			ExternalRoundId: "50-1691469296-370404138-1",
-			ExternalBetId: "50-1691469296-370404138-1",
-			ExternalCreatedOn: DateTimeOffset.Parse("2023-08-08 12:34:56.000 +0800"),
-			ExternalClosedOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
-			ExternalPayoffOn: DateTimeOffset.Parse("2023-08-08 12:35:18.000 +0800"),
+			ExternalRoundId: externalRoundId,
+			ExternalBetId: externalBetId,
+			ExternalCreatedOn: externalCreatedOn,
+			ExternalClosedOn: externalClosedOn,
+			ExternalPayoffOn: externalPayoffOn,
 			ExternalResettleOn: DateTimeOffset.UnixEpoch,
 			BetState: GameBets.Common.Enums.BetState.HalfLoss,
 			BetType: GameBets.Common.Enums.BetType.Normal,
@@ -1147,13 +1391,17 @@ public class GameBetsWorkerRepositoryUnitTest
 			Settle: 2.0m,
 			WinLoss: -2.0m,
 			Turnover: 4.0m,
-			Commission: 0.0m,
-			Contribute: 0.0m,
+			Commission: 0.1m,
+			Contribute: 0.01m,
 			Jackpot: 0.0m,
+			CreatedOn: createdOn,
+			ClosedOn: closedOn,
 			AdditionalData: new JsonObject
 			{
-				["externalRoundId"] = "50-1691469296-370404138-1"
-			});
+				["ExternalRoundId"] = externalRoundId,
+				["ExternalBetId"] = externalBetId
+			},
+			ExtendedData: new JsonObject { });
 
 		var sut = new GameBetsWorkerRepository(
 			fakeLogger,
@@ -1165,41 +1413,43 @@ public class GameBetsWorkerRepositoryUnitTest
 		_ = fakeClient
 			.Received(1)
 			.HandleAsync(
-			source: Arg.Is(new GameBets.Worker.Common.ViewModels.WorkerHandleViewModel
-			{
-				GameBetId = command.Id,
-				GameProviderId = command.GameProviderId,
-				GameProviderConfigurationId = command.GameProviderConfigurationId,
-				GameId = command.GameId,
-				ResellerId = command.ResellerId,
-				LicenseeId = command.LicenseeId,
-				BrandId = command.BrandId,
-				PlayerCode = command.PlayerCode,
-				CurrencyCode = command.CurrencyCode,
-				WalletId = command.WalletId,
-				ExternalRoundId = command.ExternalRoundId,
-				ExternalBetId = command.ExternalBetId,
-				ExternalCreatedOn = command.ExternalCreatedOn,
-				ExternalClosedOn = command.ExternalClosedOn,
-				ExternalPayoffOn = command.ExternalPayoffOn,
-				ExternalResettleOn = command.ExternalResettleOn,
-				BetState = GameBets.Worker.Common.Protos.BetState.HalfLoss,
-				BetType = GameBets.Worker.Common.Protos.BetType.Normal,
-				FreeGameState = GameBets.Worker.Common.Protos.FreeGameState.None,
-				GambleState = GameBets.Worker.Common.Protos.GambleState.None,
-				CashoutState = GameBets.Worker.Common.Protos.CashoutState.None,
-				ResettleState = GameBets.Worker.Common.Protos.ResettleState.None,
-				JackpotState = GameBets.Worker.Common.Protos.JackpotState.None,
-				CurrencyRatio = command.CurrencyRatio,
-				Bet = command.Bet,
-				ValidBet = command.ValidBet,
-				Settle = command.Settle,
-				Commission = command.Commission,
-				Turnover = command.Turnover,
-				WinLoss = command.WinLoss,
-				Jackpot = command.Jackpot,
-				AdditionalData = command.AdditionalData.ToJsonString(),
-			}),
+			source: Arg.Is<GameBets.Worker.Common.ViewModels.GameBetHandleViewModel>(compare =>
+				compare.GameBetId == command.GameBetId &&
+				compare.GameProviderId == command.GameProviderId &&
+				compare.GameProviderConfigurationId == command.GameProviderConfigurationId &&
+				compare.GameId == command.GameId &&
+				compare.ResellerId == command.ResellerId &&
+				compare.LicenseeId == command.LicenseeId &&
+				compare.BrandId == command.BrandId &&
+				compare.PlayerCode == command.PlayerCode &&
+				compare.CurrencyCode == command.CurrencyCode &&
+				compare.WalletId == command.WalletId &&
+				compare.ExternalRoundId == command.ExternalRoundId &&
+				compare.ExternalBetId == command.ExternalBetId &&
+				compare.ExternalCreatedOn == command.ExternalCreatedOn &&
+				compare.ExternalClosedOn == command.ExternalClosedOn &&
+				compare.ExternalPayoffOn == command.ExternalPayoffOn &&
+				compare.ExternalResettleOn == command.ExternalResettleOn &&
+				compare.BetState == GameBets.Worker.Common.Protos.BetState.HalfLoss &&
+				compare.BetType == GameBets.Worker.Common.Protos.BetType.Normal &&
+				compare.FreeGameState == GameBets.Worker.Common.Protos.FreeGameState.None &&
+				compare.GambleState == GameBets.Worker.Common.Protos.GambleState.None &&
+				compare.CashoutState == GameBets.Worker.Common.Protos.CashoutState.None &&
+				compare.ResettleState == GameBets.Worker.Common.Protos.ResettleState.None &&
+				compare.JackpotState == GameBets.Worker.Common.Protos.JackpotState.None &&
+				compare.CurrencyRatio == command.CurrencyRatio &&
+				compare.Bet == command.Bet &&
+				compare.ValidBet == command.ValidBet &&
+				compare.Settle == command.Settle &&
+				compare.WinLoss == command.WinLoss &&
+				compare.Turnover == command.Turnover &&
+				compare.Commission == command.Commission &&
+				compare.Contribute == command.Contribute &&
+				compare.Jackpot == command.Jackpot &&
+				compare.CreatedOn == command.CreatedOn &&
+				compare.ClosedOn == command.ClosedOn &&
+				compare.AdditionalData == command.AdditionalData &&
+				compare.ExtendedData == command.ExtendedData),
 			cancellationToken: Arg.Any<CancellationToken>());
 	}
 }
