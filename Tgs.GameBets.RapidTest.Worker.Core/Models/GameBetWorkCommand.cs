@@ -2,7 +2,7 @@
 
 namespace Tgs.GameBets.RapidTest.Worker.Core.Models;
 public record GameBetWorkCommand(
-	Guid Id,
+	Guid GameBetId,
 	Guid GameProviderId,
 	Guid GameProviderConfigurationId,
 	int GameId,
@@ -34,4 +34,7 @@ public record GameBetWorkCommand(
 	decimal Commission,
 	decimal Contribute,
 	decimal Jackpot,
-	JsonNode AdditionalData);
+	DateTimeOffset CreatedOn,
+	DateTimeOffset ClosedOn,
+	JsonNode AdditionalData,
+	JsonNode ExtendedData);

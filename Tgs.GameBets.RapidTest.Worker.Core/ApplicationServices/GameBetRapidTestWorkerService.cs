@@ -160,7 +160,7 @@ internal class GameBetRapidTestWorkerService(
 
 		await gameBetsWorkerRepository.CommandAsync(
 			command: new GameBetWorkCommand(
-				Id: id,
+				GameBetId: id,
 				GameProviderId: gameBetMajorInfo.GameProviderId,
 				GameProviderConfigurationId: gameBetMajorInfo.GameProviderConfigurationId,
 				GameId: gameBetMajorInfo.GameId,
@@ -192,7 +192,10 @@ internal class GameBetRapidTestWorkerService(
 				Commission: gameBetMajorInfo.Commission,
 				Contribute: gameBetMajorInfo.Contribute,
 				Jackpot: gameBetMajorInfo.Jackpot,
-				AdditionalData: gameBetMajorInfo.AdditionalData),
+				CreatedOn: gameBetMajorInfo.CreatedOn,
+				ClosedOn: gameBetMajorInfo.ClosedOn,
+				AdditionalData: gameBetMajorInfo.AdditionalData,
+				ExtendedData: gameBetMajorInfo.ExtendedData),
 			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 	}
