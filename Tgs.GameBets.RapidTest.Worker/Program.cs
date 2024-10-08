@@ -54,11 +54,6 @@ builder.Services
 	.AddOptions<GameBetRapidTestWorkerSettingsOptions>()
 	.Configure((options) => builder.Configuration.GetSection("GameBetRapidTestWorkerSettings").Bind(options))
 	.Services
-	.AddGameBetsRapidTestClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
-	{
-		var config = sp.GetRequiredService<IConfiguration>();
-		http.BaseAddress = config.GetValue<Uri>("GameBetsRapidTestWorkerConnectionStrings:GameBetsRapidTestClientBaseUrl");
-	}))
 	.AddGameBetsClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
 		var config = sp.GetRequiredService<IConfiguration>();

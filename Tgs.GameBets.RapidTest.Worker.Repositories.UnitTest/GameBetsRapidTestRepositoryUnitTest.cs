@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using Tgs.GameBets.RapidTest.Client;
+using Tgs.GameBets.Client;
 using Tgs.GameBets.RapidTest.Worker.Core;
 using Tgs.GameBets.RapidTest.Worker.Core.Models;
 
@@ -19,7 +19,7 @@ public class GameBetsRapidTestRepositoryUnitTest
 			RetryCount = 1,
 			RetrySeconds = 1,
 		});
-		var fakeClient = Substitute.For<IGameBetsRapidTestClient>();
+		var fakeClient = Substitute.For<IGameBetsClient>();
 
 		var command = new GameBetRapidTestCommand(
 			GameProviderCode: "KY",
@@ -57,36 +57,38 @@ public class GameBetsRapidTestRepositoryUnitTest
 			});
 
 		_ = fakeClient.GameBetRapidTestCommandAsync(
-			source: Arg.Is(new RapidTest.Common.ViewModels.GameBetRapidTestCommandViewModel(
-			GameProviderCode: command.GameProviderCode,
-			SubGameProviderCode: command.SubGameProviderCode,
-			GameId: command.GameId,
-			ResellerCode: command.ResellerCode,
-			LicenseeCode: command.LicenseeCode,
-			BrandCode: command.BrandCode,
-			PlayerCode: command.PlayerCode,
-			Username: command.Username,
-			CurrencyCode: command.CurrencyCode,
-			WalletId: command.WalletId,
-			ExternalRoundId: command.ExternalRoundId,
-			ExternalBetId: command.ExternalBetId,
-			ExternalGameId: command.ExternalGameId,
-			BetState: RapidTest.Common.Enums.BetState.Waiting,
-			BetType: RapidTest.Common.Enums.BetType.Normal,
-			FreeGameState: RapidTest.Common.Enums.FreeGameState.None,
-			GambleState: RapidTest.Common.Enums.GambleState.None,
-			CashoutState: RapidTest.Common.Enums.CashoutState.None,
-			ResettleState: RapidTest.Common.Enums.ResettleState.None,
-			JackpotState: RapidTest.Common.Enums.JackpotState.None,
-			CurrencyRatio: command.CurrencyRatio,
-			Bet: command.Bet,
-			ValidBet: command.ValidBet,
-			Settle: command.Settle,
-			Commission: command.Commission,
-			Turnover: command.Turnover,
-			WinLoss: command.WinLoss,
-			Jackpot: command.Jackpot,
-			AdditionalData: command.AdditionalData.ToJsonString())),
+			source: Arg.Is(new GameBets.Common.ViewModels.GameBetRapidTestCommandViewModel
+			{
+				GameProviderCode = command.GameProviderCode,
+				SubGameProviderCode = command.SubGameProviderCode,
+				GameId = command.GameId,
+				ResellerCode = command.ResellerCode,
+				LicenseeCode = command.LicenseeCode,
+				BrandCode = command.BrandCode,
+				PlayerCode = command.PlayerCode,
+				Username = command.Username,
+				CurrencyCode = command.CurrencyCode,
+				WalletId = command.WalletId,
+				ExternalRoundId = command.ExternalRoundId,
+				ExternalBetId = command.ExternalBetId,
+				ExternalGameId = command.ExternalGameId,
+				BetState = GameBets.Common.Enums.BetState.Waiting,
+				BetType = GameBets.Common.Enums.BetType.Normal,
+				FreeGameState = GameBets.Common.Enums.FreeGameState.None,
+				GambleState = GameBets.Common.Enums.GambleState.None,
+				CashoutState = GameBets.Common.Enums.CashoutState.None,
+				ResettleState = GameBets.Common.Enums.ResettleState.None,
+				JackpotState = GameBets.Common.Enums.JackpotState.None,
+				CurrencyRatio = command.CurrencyRatio,
+				Bet = command.Bet,
+				ValidBet = command.ValidBet,
+				Settle = command.Settle,
+				WinLoss = command.WinLoss,
+				Turnover = command.Turnover,
+				Commission = command.Commission,
+				Contribute = command.Contribute,
+				Jackpot = command.Jackpot
+			}),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -109,7 +111,7 @@ public class GameBetsRapidTestRepositoryUnitTest
 			RetryCount = 1,
 			RetrySeconds = 1,
 		});
-		var fakeClient = Substitute.For<IGameBetsRapidTestClient>();
+		var fakeClient = Substitute.For<IGameBetsClient>();
 
 		var command = new GameBetRapidTestCommand(
 			GameProviderCode: "KY",
@@ -147,36 +149,38 @@ public class GameBetsRapidTestRepositoryUnitTest
 			});
 
 		_ = fakeClient.GameBetRapidTestCommandAsync(
-			source: Arg.Is(new RapidTest.Common.ViewModels.GameBetRapidTestCommandViewModel(
-			GameProviderCode: command.GameProviderCode,
-			SubGameProviderCode: command.SubGameProviderCode,
-			GameId: command.GameId,
-			ResellerCode: command.ResellerCode,
-			LicenseeCode: command.LicenseeCode,
-			BrandCode: command.BrandCode,
-			PlayerCode: command.PlayerCode,
-			Username: command.Username,
-			CurrencyCode: command.CurrencyCode,
-			WalletId: command.WalletId,
-			ExternalRoundId: command.ExternalRoundId,
-			ExternalBetId: command.ExternalBetId,
-			ExternalGameId: command.ExternalGameId,
-			BetState: RapidTest.Common.Enums.BetState.Running,
-			BetType: RapidTest.Common.Enums.BetType.Normal,
-			FreeGameState: RapidTest.Common.Enums.FreeGameState.None,
-			GambleState: RapidTest.Common.Enums.GambleState.None,
-			CashoutState: RapidTest.Common.Enums.CashoutState.None,
-			ResettleState: RapidTest.Common.Enums.ResettleState.None,
-			JackpotState: RapidTest.Common.Enums.JackpotState.None,
-			CurrencyRatio: command.CurrencyRatio,
-			Bet: command.Bet,
-			ValidBet: command.ValidBet,
-			Settle: command.Settle,
-			Commission: command.Commission,
-			Turnover: command.Turnover,
-			WinLoss: command.WinLoss,
-			Jackpot: command.Jackpot,
-			AdditionalData: command.AdditionalData.ToJsonString())),
+			source: Arg.Is(new GameBets.Common.ViewModels.GameBetRapidTestCommandViewModel
+			{
+				GameProviderCode = command.GameProviderCode,
+				SubGameProviderCode = command.SubGameProviderCode,
+				GameId = command.GameId,
+				ResellerCode = command.ResellerCode,
+				LicenseeCode = command.LicenseeCode,
+				BrandCode = command.BrandCode,
+				PlayerCode = command.PlayerCode,
+				Username = command.Username,
+				CurrencyCode = command.CurrencyCode,
+				WalletId = command.WalletId,
+				ExternalRoundId = command.ExternalRoundId,
+				ExternalBetId = command.ExternalBetId,
+				ExternalGameId = command.ExternalGameId,
+				BetState = GameBets.Common.Enums.BetState.Running,
+				BetType = GameBets.Common.Enums.BetType.Normal,
+				FreeGameState = GameBets.Common.Enums.FreeGameState.None,
+				GambleState = GameBets.Common.Enums.GambleState.None,
+				CashoutState = GameBets.Common.Enums.CashoutState.None,
+				ResettleState = GameBets.Common.Enums.ResettleState.None,
+				JackpotState = GameBets.Common.Enums.JackpotState.None,
+				CurrencyRatio = command.CurrencyRatio,
+				Bet = command.Bet,
+				ValidBet = command.ValidBet,
+				Settle = command.Settle,
+				WinLoss = command.WinLoss,
+				Turnover = command.Turnover,
+				Commission = command.Commission,
+				Contribute = command.Contribute,
+				Jackpot = command.Jackpot
+			}),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -199,7 +203,7 @@ public class GameBetsRapidTestRepositoryUnitTest
 			RetryCount = 1,
 			RetrySeconds = 1,
 		});
-		var fakeClient = Substitute.For<IGameBetsRapidTestClient>();
+		var fakeClient = Substitute.For<IGameBetsClient>();
 
 		var command = new GameBetRapidTestCommand(
 			GameProviderCode: "KY",
@@ -237,36 +241,38 @@ public class GameBetsRapidTestRepositoryUnitTest
 			});
 
 		_ = fakeClient.GameBetRapidTestCommandAsync(
-			source: Arg.Is(new RapidTest.Common.ViewModels.GameBetRapidTestCommandViewModel(
-			GameProviderCode: command.GameProviderCode,
-			SubGameProviderCode: command.SubGameProviderCode,
-			GameId: command.GameId,
-			ResellerCode: command.ResellerCode,
-			LicenseeCode: command.LicenseeCode,
-			BrandCode: command.BrandCode,
-			PlayerCode: command.PlayerCode,
-			Username: command.Username,
-			CurrencyCode: command.CurrencyCode,
-			WalletId: command.WalletId,
-			ExternalRoundId: command.ExternalRoundId,
-			ExternalBetId: command.ExternalBetId,
-			ExternalGameId: command.ExternalGameId,
-			BetState: RapidTest.Common.Enums.BetState.Void,
-			BetType: RapidTest.Common.Enums.BetType.Normal,
-			FreeGameState: RapidTest.Common.Enums.FreeGameState.None,
-			GambleState: RapidTest.Common.Enums.GambleState.None,
-			CashoutState: RapidTest.Common.Enums.CashoutState.None,
-			ResettleState: RapidTest.Common.Enums.ResettleState.None,
-			JackpotState: RapidTest.Common.Enums.JackpotState.None,
-			CurrencyRatio: command.CurrencyRatio,
-			Bet: command.Bet,
-			ValidBet: command.ValidBet,
-			Settle: command.Settle,
-			Commission: command.Commission,
-			Turnover: command.Turnover,
-			WinLoss: command.WinLoss,
-			Jackpot: command.Jackpot,
-			AdditionalData: command.AdditionalData.ToJsonString())),
+			source: Arg.Is(new GameBets.Common.ViewModels.GameBetRapidTestCommandViewModel
+			{
+				GameProviderCode = command.GameProviderCode,
+				SubGameProviderCode = command.SubGameProviderCode,
+				GameId = command.GameId,
+				ResellerCode = command.ResellerCode,
+				LicenseeCode = command.LicenseeCode,
+				BrandCode = command.BrandCode,
+				PlayerCode = command.PlayerCode,
+				Username = command.Username,
+				CurrencyCode = command.CurrencyCode,
+				WalletId = command.WalletId,
+				ExternalRoundId = command.ExternalRoundId,
+				ExternalBetId = command.ExternalBetId,
+				ExternalGameId = command.ExternalGameId,
+				BetState = GameBets.Common.Enums.BetState.Void,
+				BetType = GameBets.Common.Enums.BetType.Normal,
+				FreeGameState = GameBets.Common.Enums.FreeGameState.None,
+				GambleState = GameBets.Common.Enums.GambleState.None,
+				CashoutState = GameBets.Common.Enums.CashoutState.None,
+				ResettleState = GameBets.Common.Enums.ResettleState.None,
+				JackpotState = GameBets.Common.Enums.JackpotState.None,
+				CurrencyRatio = command.CurrencyRatio,
+				Bet = command.Bet,
+				ValidBet = command.ValidBet,
+				Settle = command.Settle,
+				WinLoss = command.WinLoss,
+				Turnover = command.Turnover,
+				Commission = command.Commission,
+				Contribute = command.Contribute,
+				Jackpot = command.Jackpot
+			}),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -289,7 +295,7 @@ public class GameBetsRapidTestRepositoryUnitTest
 			RetryCount = 1,
 			RetrySeconds = 1,
 		});
-		var fakeClient = Substitute.For<IGameBetsRapidTestClient>();
+		var fakeClient = Substitute.For<IGameBetsClient>();
 
 		var command = new GameBetRapidTestCommand(
 			GameProviderCode: "KY",
@@ -327,36 +333,38 @@ public class GameBetsRapidTestRepositoryUnitTest
 			});
 
 		_ = fakeClient.GameBetRapidTestCommandAsync(
-			source: Arg.Is(new RapidTest.Common.ViewModels.GameBetRapidTestCommandViewModel(
-			GameProviderCode: command.GameProviderCode,
-			SubGameProviderCode: command.SubGameProviderCode,
-			GameId: command.GameId,
-			ResellerCode: command.ResellerCode,
-			LicenseeCode: command.LicenseeCode,
-			BrandCode: command.BrandCode,
-			PlayerCode: command.PlayerCode,
-			Username: command.Username,
-			CurrencyCode: command.CurrencyCode,
-			WalletId: command.WalletId,
-			ExternalRoundId: command.ExternalRoundId,
-			ExternalBetId: command.ExternalBetId,
-			ExternalGameId: command.ExternalGameId,
-			BetState: RapidTest.Common.Enums.BetState.Refund,
-			BetType: RapidTest.Common.Enums.BetType.Normal,
-			FreeGameState: RapidTest.Common.Enums.FreeGameState.None,
-			GambleState: RapidTest.Common.Enums.GambleState.None,
-			CashoutState: RapidTest.Common.Enums.CashoutState.None,
-			ResettleState: RapidTest.Common.Enums.ResettleState.None,
-			JackpotState: RapidTest.Common.Enums.JackpotState.None,
-			CurrencyRatio: command.CurrencyRatio,
-			Bet: command.Bet,
-			ValidBet: command.ValidBet,
-			Settle: command.Settle,
-			Commission: command.Commission,
-			Turnover: command.Turnover,
-			WinLoss: command.WinLoss,
-			Jackpot: command.Jackpot,
-			AdditionalData: command.AdditionalData.ToJsonString())),
+			source: Arg.Is(new GameBets.Common.ViewModels.GameBetRapidTestCommandViewModel
+			{
+				GameProviderCode = command.GameProviderCode,
+				SubGameProviderCode = command.SubGameProviderCode,
+				GameId = command.GameId,
+				ResellerCode = command.ResellerCode,
+				LicenseeCode = command.LicenseeCode,
+				BrandCode = command.BrandCode,
+				PlayerCode = command.PlayerCode,
+				Username = command.Username,
+				CurrencyCode = command.CurrencyCode,
+				WalletId = command.WalletId,
+				ExternalRoundId = command.ExternalRoundId,
+				ExternalBetId = command.ExternalBetId,
+				ExternalGameId = command.ExternalGameId,
+				BetState = GameBets.Common.Enums.BetState.Refund,
+				BetType = GameBets.Common.Enums.BetType.Normal,
+				FreeGameState = GameBets.Common.Enums.FreeGameState.None,
+				GambleState = GameBets.Common.Enums.GambleState.None,
+				CashoutState = GameBets.Common.Enums.CashoutState.None,
+				ResettleState = GameBets.Common.Enums.ResettleState.None,
+				JackpotState = GameBets.Common.Enums.JackpotState.None,
+				CurrencyRatio = command.CurrencyRatio,
+				Bet = command.Bet,
+				ValidBet = command.ValidBet,
+				Settle = command.Settle,
+				WinLoss = command.WinLoss,
+				Turnover = command.Turnover,
+				Commission = command.Commission,
+				Contribute = command.Contribute,
+				Jackpot = command.Jackpot
+			}),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -379,7 +387,7 @@ public class GameBetsRapidTestRepositoryUnitTest
 			RetryCount = 1,
 			RetrySeconds = 1,
 		});
-		var fakeClient = Substitute.For<IGameBetsRapidTestClient>();
+		var fakeClient = Substitute.For<IGameBetsClient>();
 
 		var command = new GameBetRapidTestCommand(
 			GameProviderCode: "KY",
@@ -417,36 +425,38 @@ public class GameBetsRapidTestRepositoryUnitTest
 			});
 
 		_ = fakeClient.GameBetRapidTestCommandAsync(
-			source: Arg.Is(new RapidTest.Common.ViewModels.GameBetRapidTestCommandViewModel(
-			GameProviderCode: command.GameProviderCode,
-			SubGameProviderCode: command.SubGameProviderCode,
-			GameId: command.GameId,
-			ResellerCode: command.ResellerCode,
-			LicenseeCode: command.LicenseeCode,
-			BrandCode: command.BrandCode,
-			PlayerCode: command.PlayerCode,
-			Username: command.Username,
-			CurrencyCode: command.CurrencyCode,
-			WalletId: command.WalletId,
-			ExternalRoundId: command.ExternalRoundId,
-			ExternalBetId: command.ExternalBetId,
-			ExternalGameId: command.ExternalGameId,
-			BetState: RapidTest.Common.Enums.BetState.Cancel,
-			BetType: RapidTest.Common.Enums.BetType.Normal,
-			FreeGameState: RapidTest.Common.Enums.FreeGameState.None,
-			GambleState: RapidTest.Common.Enums.GambleState.None,
-			CashoutState: RapidTest.Common.Enums.CashoutState.None,
-			ResettleState: RapidTest.Common.Enums.ResettleState.None,
-			JackpotState: RapidTest.Common.Enums.JackpotState.None,
-			CurrencyRatio: command.CurrencyRatio,
-			Bet: command.Bet,
-			ValidBet: command.ValidBet,
-			Settle: command.Settle,
-			Commission: command.Commission,
-			Turnover: command.Turnover,
-			WinLoss: command.WinLoss,
-			Jackpot: command.Jackpot,
-			AdditionalData: command.AdditionalData.ToJsonString())),
+			source: Arg.Is(new GameBets.Common.ViewModels.GameBetRapidTestCommandViewModel
+			{
+				GameProviderCode = command.GameProviderCode,
+				SubGameProviderCode = command.SubGameProviderCode,
+				GameId = command.GameId,
+				ResellerCode = command.ResellerCode,
+				LicenseeCode = command.LicenseeCode,
+				BrandCode = command.BrandCode,
+				PlayerCode = command.PlayerCode,
+				Username = command.Username,
+				CurrencyCode = command.CurrencyCode,
+				WalletId = command.WalletId,
+				ExternalRoundId = command.ExternalRoundId,
+				ExternalBetId = command.ExternalBetId,
+				ExternalGameId = command.ExternalGameId,
+				BetState = GameBets.Common.Enums.BetState.Cancel,
+				BetType = GameBets.Common.Enums.BetType.Normal,
+				FreeGameState = GameBets.Common.Enums.FreeGameState.None,
+				GambleState = GameBets.Common.Enums.GambleState.None,
+				CashoutState = GameBets.Common.Enums.CashoutState.None,
+				ResettleState = GameBets.Common.Enums.ResettleState.None,
+				JackpotState = GameBets.Common.Enums.JackpotState.None,
+				CurrencyRatio = command.CurrencyRatio,
+				Bet = command.Bet,
+				ValidBet = command.ValidBet,
+				Settle = command.Settle,
+				WinLoss = command.WinLoss,
+				Turnover = command.Turnover,
+				Commission = command.Commission,
+				Contribute = command.Contribute,
+				Jackpot = command.Jackpot
+			}),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -469,7 +479,7 @@ public class GameBetsRapidTestRepositoryUnitTest
 			RetryCount = 1,
 			RetrySeconds = 1,
 		});
-		var fakeClient = Substitute.For<IGameBetsRapidTestClient>();
+		var fakeClient = Substitute.For<IGameBetsClient>();
 
 		var command = new GameBetRapidTestCommand(
 			GameProviderCode: "KY",
@@ -493,50 +503,52 @@ public class GameBetsRapidTestRepositoryUnitTest
 			ResettleState: GameBets.Common.Enums.ResettleState.None,
 			JackpotState: GameBets.Common.Enums.JackpotState.None,
 			CurrencyRatio: 1.0m,
-			Bet: 4.0m,
-			ValidBet: 4.0m,
-			Settle: 8.0m,
-			WinLoss: 4.0m,
-			Turnover: 4.0m,
-			Commission: 0.0m,
-			Contribute: 0.0m,
-			Jackpot: 0.0m,
+			Bet: 10.0m,
+			ValidBet: 5.0m,
+			Settle: 7.5m,
+			WinLoss: 2.5m,
+			Turnover: 2.4m,
+			Commission: 0.1m,
+			Contribute: 0.01m,
+			Jackpot: 4.9m,
 			AdditionalData: new JsonObject
 			{
 				["externalRoundId"] = "50-1691469296-370404138-1"
 			});
 
 		_ = fakeClient.GameBetRapidTestCommandAsync(
-			source: Arg.Is(new RapidTest.Common.ViewModels.GameBetRapidTestCommandViewModel(
-			GameProviderCode: command.GameProviderCode,
-			SubGameProviderCode: command.SubGameProviderCode,
-			GameId: command.GameId,
-			ResellerCode: command.ResellerCode,
-			LicenseeCode: command.LicenseeCode,
-			BrandCode: command.BrandCode,
-			PlayerCode: command.PlayerCode,
-			Username: command.Username,
-			CurrencyCode: command.CurrencyCode,
-			WalletId: command.WalletId,
-			ExternalRoundId: command.ExternalRoundId,
-			ExternalBetId: command.ExternalBetId,
-			ExternalGameId: command.ExternalGameId,
-			BetState: RapidTest.Common.Enums.BetState.Win,
-			BetType: RapidTest.Common.Enums.BetType.Normal,
-			FreeGameState: RapidTest.Common.Enums.FreeGameState.None,
-			GambleState: RapidTest.Common.Enums.GambleState.None,
-			CashoutState: RapidTest.Common.Enums.CashoutState.None,
-			ResettleState: RapidTest.Common.Enums.ResettleState.None,
-			JackpotState: RapidTest.Common.Enums.JackpotState.None,
-			CurrencyRatio: command.CurrencyRatio,
-			Bet: command.Bet,
-			ValidBet: command.ValidBet,
-			Settle: command.Settle,
-			Commission: command.Commission,
-			Turnover: command.Turnover,
-			WinLoss: command.WinLoss,
-			Jackpot: command.Jackpot,
-			AdditionalData: command.AdditionalData.ToJsonString())),
+			source: Arg.Is(new GameBets.Common.ViewModels.GameBetRapidTestCommandViewModel
+			{
+				GameProviderCode = command.GameProviderCode,
+				SubGameProviderCode = command.SubGameProviderCode,
+				GameId = command.GameId,
+				ResellerCode = command.ResellerCode,
+				LicenseeCode = command.LicenseeCode,
+				BrandCode = command.BrandCode,
+				PlayerCode = command.PlayerCode,
+				Username = command.Username,
+				CurrencyCode = command.CurrencyCode,
+				WalletId = command.WalletId,
+				ExternalRoundId = command.ExternalRoundId,
+				ExternalBetId = command.ExternalBetId,
+				ExternalGameId = command.ExternalGameId,
+				BetState = GameBets.Common.Enums.BetState.Win,
+				BetType = GameBets.Common.Enums.BetType.Normal,
+				FreeGameState = GameBets.Common.Enums.FreeGameState.None,
+				GambleState = GameBets.Common.Enums.GambleState.None,
+				CashoutState = GameBets.Common.Enums.CashoutState.None,
+				ResettleState = GameBets.Common.Enums.ResettleState.None,
+				JackpotState = GameBets.Common.Enums.JackpotState.None,
+				CurrencyRatio = command.CurrencyRatio,
+				Bet = command.Bet,
+				ValidBet = command.ValidBet,
+				Settle = command.Settle,
+				WinLoss = command.WinLoss,
+				Turnover = command.Turnover,
+				Commission = command.Commission,
+				Contribute = command.Contribute,
+				Jackpot = command.Jackpot
+			}),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -559,7 +571,7 @@ public class GameBetsRapidTestRepositoryUnitTest
 			RetryCount = 1,
 			RetrySeconds = 1,
 		});
-		var fakeClient = Substitute.For<IGameBetsRapidTestClient>();
+		var fakeClient = Substitute.For<IGameBetsClient>();
 
 		var command = new GameBetRapidTestCommand(
 			GameProviderCode: "KY",
@@ -597,36 +609,38 @@ public class GameBetsRapidTestRepositoryUnitTest
 			});
 
 		_ = fakeClient.GameBetRapidTestCommandAsync(
-			source: Arg.Is(new RapidTest.Common.ViewModels.GameBetRapidTestCommandViewModel(
-			GameProviderCode: command.GameProviderCode,
-			SubGameProviderCode: command.SubGameProviderCode,
-			GameId: command.GameId,
-			ResellerCode: command.ResellerCode,
-			LicenseeCode: command.LicenseeCode,
-			BrandCode: command.BrandCode,
-			PlayerCode: command.PlayerCode,
-			Username: command.Username,
-			CurrencyCode: command.CurrencyCode,
-			WalletId: command.WalletId,
-			ExternalRoundId: command.ExternalRoundId,
-			ExternalBetId: command.ExternalBetId,
-			ExternalGameId: command.ExternalGameId,
-			BetState: RapidTest.Common.Enums.BetState.Loss,
-			BetType: RapidTest.Common.Enums.BetType.Normal,
-			FreeGameState: RapidTest.Common.Enums.FreeGameState.None,
-			GambleState: RapidTest.Common.Enums.GambleState.None,
-			CashoutState: RapidTest.Common.Enums.CashoutState.None,
-			ResettleState: RapidTest.Common.Enums.ResettleState.None,
-			JackpotState: RapidTest.Common.Enums.JackpotState.None,
-			CurrencyRatio: command.CurrencyRatio,
-			Bet: command.Bet,
-			ValidBet: command.ValidBet,
-			Settle: command.Settle,
-			Commission: command.Commission,
-			Turnover: command.Turnover,
-			WinLoss: command.WinLoss,
-			Jackpot: command.Jackpot,
-			AdditionalData: command.AdditionalData.ToJsonString())),
+			source: Arg.Is(new GameBets.Common.ViewModels.GameBetRapidTestCommandViewModel
+			{
+				GameProviderCode = command.GameProviderCode,
+				SubGameProviderCode = command.SubGameProviderCode,
+				GameId = command.GameId,
+				ResellerCode = command.ResellerCode,
+				LicenseeCode = command.LicenseeCode,
+				BrandCode = command.BrandCode,
+				PlayerCode = command.PlayerCode,
+				Username = command.Username,
+				CurrencyCode = command.CurrencyCode,
+				WalletId = command.WalletId,
+				ExternalRoundId = command.ExternalRoundId,
+				ExternalBetId = command.ExternalBetId,
+				ExternalGameId = command.ExternalGameId,
+				BetState = GameBets.Common.Enums.BetState.Loss,
+				BetType = GameBets.Common.Enums.BetType.Normal,
+				FreeGameState = GameBets.Common.Enums.FreeGameState.None,
+				GambleState = GameBets.Common.Enums.GambleState.None,
+				CashoutState = GameBets.Common.Enums.CashoutState.None,
+				ResettleState = GameBets.Common.Enums.ResettleState.None,
+				JackpotState = GameBets.Common.Enums.JackpotState.None,
+				CurrencyRatio = command.CurrencyRatio,
+				Bet = command.Bet,
+				ValidBet = command.ValidBet,
+				Settle = command.Settle,
+				WinLoss = command.WinLoss,
+				Turnover = command.Turnover,
+				Commission = command.Commission,
+				Contribute = command.Contribute,
+				Jackpot = command.Jackpot
+			}),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -649,7 +663,7 @@ public class GameBetsRapidTestRepositoryUnitTest
 			RetryCount = 1,
 			RetrySeconds = 1,
 		});
-		var fakeClient = Substitute.For<IGameBetsRapidTestClient>();
+		var fakeClient = Substitute.For<IGameBetsClient>();
 
 		var command = new GameBetRapidTestCommand(
 			GameProviderCode: "KY",
@@ -687,36 +701,38 @@ public class GameBetsRapidTestRepositoryUnitTest
 			});
 
 		_ = fakeClient.GameBetRapidTestCommandAsync(
-			source: Arg.Is(new RapidTest.Common.ViewModels.GameBetRapidTestCommandViewModel(
-			GameProviderCode: command.GameProviderCode,
-			SubGameProviderCode: command.SubGameProviderCode,
-			GameId: command.GameId,
-			ResellerCode: command.ResellerCode,
-			LicenseeCode: command.LicenseeCode,
-			BrandCode: command.BrandCode,
-			PlayerCode: command.PlayerCode,
-			Username: command.Username,
-			CurrencyCode: command.CurrencyCode,
-			WalletId: command.WalletId,
-			ExternalRoundId: command.ExternalRoundId,
-			ExternalBetId: command.ExternalBetId,
-			ExternalGameId: command.ExternalGameId,
-			BetState: RapidTest.Common.Enums.BetState.Draw,
-			BetType: RapidTest.Common.Enums.BetType.Normal,
-			FreeGameState: RapidTest.Common.Enums.FreeGameState.None,
-			GambleState: RapidTest.Common.Enums.GambleState.None,
-			CashoutState: RapidTest.Common.Enums.CashoutState.None,
-			ResettleState: RapidTest.Common.Enums.ResettleState.None,
-			JackpotState: RapidTest.Common.Enums.JackpotState.None,
-			CurrencyRatio: command.CurrencyRatio,
-			Bet: command.Bet,
-			ValidBet: command.ValidBet,
-			Settle: command.Settle,
-			Commission: command.Commission,
-			Turnover: command.Turnover,
-			WinLoss: command.WinLoss,
-			Jackpot: command.Jackpot,
-			AdditionalData: command.AdditionalData.ToJsonString())),
+			source: Arg.Is(new GameBets.Common.ViewModels.GameBetRapidTestCommandViewModel
+			{
+				GameProviderCode = command.GameProviderCode,
+				SubGameProviderCode = command.SubGameProviderCode,
+				GameId = command.GameId,
+				ResellerCode = command.ResellerCode,
+				LicenseeCode = command.LicenseeCode,
+				BrandCode = command.BrandCode,
+				PlayerCode = command.PlayerCode,
+				Username = command.Username,
+				CurrencyCode = command.CurrencyCode,
+				WalletId = command.WalletId,
+				ExternalRoundId = command.ExternalRoundId,
+				ExternalBetId = command.ExternalBetId,
+				ExternalGameId = command.ExternalGameId,
+				BetState = GameBets.Common.Enums.BetState.Draw,
+				BetType = GameBets.Common.Enums.BetType.Normal,
+				FreeGameState = GameBets.Common.Enums.FreeGameState.None,
+				GambleState = GameBets.Common.Enums.GambleState.None,
+				CashoutState = GameBets.Common.Enums.CashoutState.None,
+				ResettleState = GameBets.Common.Enums.ResettleState.None,
+				JackpotState = GameBets.Common.Enums.JackpotState.None,
+				CurrencyRatio = command.CurrencyRatio,
+				Bet = command.Bet,
+				ValidBet = command.ValidBet,
+				Settle = command.Settle,
+				WinLoss = command.WinLoss,
+				Turnover = command.Turnover,
+				Commission = command.Commission,
+				Contribute = command.Contribute,
+				Jackpot = command.Jackpot
+			}),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -739,7 +755,7 @@ public class GameBetsRapidTestRepositoryUnitTest
 			RetryCount = 1,
 			RetrySeconds = 1,
 		});
-		var fakeClient = Substitute.For<IGameBetsRapidTestClient>();
+		var fakeClient = Substitute.For<IGameBetsClient>();
 
 		var command = new GameBetRapidTestCommand(
 			GameProviderCode: "KY",
@@ -777,36 +793,38 @@ public class GameBetsRapidTestRepositoryUnitTest
 			});
 
 		_ = fakeClient.GameBetRapidTestCommandAsync(
-			source: Arg.Is(new RapidTest.Common.ViewModels.GameBetRapidTestCommandViewModel(
-			GameProviderCode: command.GameProviderCode,
-			SubGameProviderCode: command.SubGameProviderCode,
-			GameId: command.GameId,
-			ResellerCode: command.ResellerCode,
-			LicenseeCode: command.LicenseeCode,
-			BrandCode: command.BrandCode,
-			PlayerCode: command.PlayerCode,
-			Username: command.Username,
-			CurrencyCode: command.CurrencyCode,
-			WalletId: command.WalletId,
-			ExternalRoundId: command.ExternalRoundId,
-			ExternalBetId: command.ExternalBetId,
-			ExternalGameId: command.ExternalGameId,
-			BetState: RapidTest.Common.Enums.BetState.HalfWin,
-			BetType: RapidTest.Common.Enums.BetType.Normal,
-			FreeGameState: RapidTest.Common.Enums.FreeGameState.None,
-			GambleState: RapidTest.Common.Enums.GambleState.None,
-			CashoutState: RapidTest.Common.Enums.CashoutState.None,
-			ResettleState: RapidTest.Common.Enums.ResettleState.None,
-			JackpotState: RapidTest.Common.Enums.JackpotState.None,
-			CurrencyRatio: command.CurrencyRatio,
-			Bet: command.Bet,
-			ValidBet: command.ValidBet,
-			Settle: command.Settle,
-			Commission: command.Commission,
-			Turnover: command.Turnover,
-			WinLoss: command.WinLoss,
-			Jackpot: command.Jackpot,
-			AdditionalData: command.AdditionalData.ToJsonString())),
+			source: Arg.Is(new GameBets.Common.ViewModels.GameBetRapidTestCommandViewModel
+			{
+				GameProviderCode = command.GameProviderCode,
+				SubGameProviderCode = command.SubGameProviderCode,
+				GameId = command.GameId,
+				ResellerCode = command.ResellerCode,
+				LicenseeCode = command.LicenseeCode,
+				BrandCode = command.BrandCode,
+				PlayerCode = command.PlayerCode,
+				Username = command.Username,
+				CurrencyCode = command.CurrencyCode,
+				WalletId = command.WalletId,
+				ExternalRoundId = command.ExternalRoundId,
+				ExternalBetId = command.ExternalBetId,
+				ExternalGameId = command.ExternalGameId,
+				BetState = GameBets.Common.Enums.BetState.HalfWin,
+				BetType = GameBets.Common.Enums.BetType.Normal,
+				FreeGameState = GameBets.Common.Enums.FreeGameState.None,
+				GambleState = GameBets.Common.Enums.GambleState.None,
+				CashoutState = GameBets.Common.Enums.CashoutState.None,
+				ResettleState = GameBets.Common.Enums.ResettleState.None,
+				JackpotState = GameBets.Common.Enums.JackpotState.None,
+				CurrencyRatio = command.CurrencyRatio,
+				Bet = command.Bet,
+				ValidBet = command.ValidBet,
+				Settle = command.Settle,
+				WinLoss = command.WinLoss,
+				Turnover = command.Turnover,
+				Commission = command.Commission,
+				Contribute = command.Contribute,
+				Jackpot = command.Jackpot
+			}),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -829,7 +847,7 @@ public class GameBetsRapidTestRepositoryUnitTest
 			RetryCount = 1,
 			RetrySeconds = 1,
 		});
-		var fakeClient = Substitute.For<IGameBetsRapidTestClient>();
+		var fakeClient = Substitute.For<IGameBetsClient>();
 
 		var command = new GameBetRapidTestCommand(
 			GameProviderCode: "KY",
@@ -867,36 +885,38 @@ public class GameBetsRapidTestRepositoryUnitTest
 			});
 
 		_ = fakeClient.GameBetRapidTestCommandAsync(
-			source: Arg.Is(new RapidTest.Common.ViewModels.GameBetRapidTestCommandViewModel(
-			GameProviderCode: command.GameProviderCode,
-			SubGameProviderCode: command.SubGameProviderCode,
-			GameId: command.GameId,
-			ResellerCode: command.ResellerCode,
-			LicenseeCode: command.LicenseeCode,
-			BrandCode: command.BrandCode,
-			PlayerCode: command.PlayerCode,
-			Username: command.Username,
-			CurrencyCode: command.CurrencyCode,
-			WalletId: command.WalletId,
-			ExternalRoundId: command.ExternalRoundId,
-			ExternalBetId: command.ExternalBetId,
-			ExternalGameId: command.ExternalGameId,
-			BetState: RapidTest.Common.Enums.BetState.HalfLoss,
-			BetType: RapidTest.Common.Enums.BetType.Normal,
-			FreeGameState: RapidTest.Common.Enums.FreeGameState.None,
-			GambleState: RapidTest.Common.Enums.GambleState.None,
-			CashoutState: RapidTest.Common.Enums.CashoutState.None,
-			ResettleState: RapidTest.Common.Enums.ResettleState.None,
-			JackpotState: RapidTest.Common.Enums.JackpotState.None,
-			CurrencyRatio: command.CurrencyRatio,
-			Bet: command.Bet,
-			ValidBet: command.ValidBet,
-			Settle: command.Settle,
-			Commission: command.Commission,
-			Turnover: command.Turnover,
-			WinLoss: command.WinLoss,
-			Jackpot: command.Jackpot,
-			AdditionalData: command.AdditionalData.ToJsonString())),
+			source: Arg.Is(new GameBets.Common.ViewModels.GameBetRapidTestCommandViewModel
+			{
+				GameProviderCode = command.GameProviderCode,
+				SubGameProviderCode = command.SubGameProviderCode,
+				GameId = command.GameId,
+				ResellerCode = command.ResellerCode,
+				LicenseeCode = command.LicenseeCode,
+				BrandCode = command.BrandCode,
+				PlayerCode = command.PlayerCode,
+				Username = command.Username,
+				CurrencyCode = command.CurrencyCode,
+				WalletId = command.WalletId,
+				ExternalRoundId = command.ExternalRoundId,
+				ExternalBetId = command.ExternalBetId,
+				ExternalGameId = command.ExternalGameId,
+				BetState = GameBets.Common.Enums.BetState.HalfLoss,
+				BetType = GameBets.Common.Enums.BetType.Normal,
+				FreeGameState = GameBets.Common.Enums.FreeGameState.None,
+				GambleState = GameBets.Common.Enums.GambleState.None,
+				CashoutState = GameBets.Common.Enums.CashoutState.None,
+				ResettleState = GameBets.Common.Enums.ResettleState.None,
+				JackpotState = GameBets.Common.Enums.JackpotState.None,
+				CurrencyRatio = command.CurrencyRatio,
+				Bet = command.Bet,
+				ValidBet = command.ValidBet,
+				Settle = command.Settle,
+				WinLoss = command.WinLoss,
+				Turnover = command.Turnover,
+				Commission = command.Commission,
+				Contribute = command.Contribute,
+				Jackpot = command.Jackpot
+			}),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(true);
 
@@ -919,7 +939,7 @@ public class GameBetsRapidTestRepositoryUnitTest
 			RetryCount = 1,
 			RetrySeconds = 1,
 		});
-		var fakeClient = Substitute.For<IGameBetsRapidTestClient>();
+		var fakeClient = Substitute.For<IGameBetsClient>();
 
 		var command = new GameBetRapidTestCommand(
 			GameProviderCode: "KY",
@@ -957,36 +977,38 @@ public class GameBetsRapidTestRepositoryUnitTest
 			});
 
 		_ = fakeClient.GameBetRapidTestCommandAsync(
-			source: Arg.Is(new RapidTest.Common.ViewModels.GameBetRapidTestCommandViewModel(
-			GameProviderCode: command.GameProviderCode,
-			SubGameProviderCode: command.SubGameProviderCode,
-			GameId: command.GameId,
-			ResellerCode: command.ResellerCode,
-			LicenseeCode: command.LicenseeCode,
-			BrandCode: command.BrandCode,
-			PlayerCode: command.PlayerCode,
-			Username: command.Username,
-			CurrencyCode: command.CurrencyCode,
-			WalletId: command.WalletId,
-			ExternalRoundId: command.ExternalRoundId,
-			ExternalBetId: command.ExternalBetId,
-			ExternalGameId: command.ExternalGameId,
-			BetState: RapidTest.Common.Enums.BetState.Win,
-			BetType: RapidTest.Common.Enums.BetType.Normal,
-			FreeGameState: RapidTest.Common.Enums.FreeGameState.None,
-			GambleState: RapidTest.Common.Enums.GambleState.None,
-			CashoutState: RapidTest.Common.Enums.CashoutState.None,
-			ResettleState: RapidTest.Common.Enums.ResettleState.None,
-			JackpotState: RapidTest.Common.Enums.JackpotState.None,
-			CurrencyRatio: command.CurrencyRatio,
-			Bet: command.Bet,
-			ValidBet: command.ValidBet,
-			Settle: command.Settle,
-			Commission: command.Commission,
-			Turnover: command.Turnover,
-			WinLoss: command.WinLoss,
-			Jackpot: command.Jackpot,
-			AdditionalData: command.AdditionalData.ToJsonString())),
+			source: Arg.Is(new GameBets.Common.ViewModels.GameBetRapidTestCommandViewModel
+			{
+				GameProviderCode = command.GameProviderCode,
+				SubGameProviderCode = command.SubGameProviderCode,
+				GameId = command.GameId,
+				ResellerCode = command.ResellerCode,
+				LicenseeCode = command.LicenseeCode,
+				BrandCode = command.BrandCode,
+				PlayerCode = command.PlayerCode,
+				Username = command.Username,
+				CurrencyCode = command.CurrencyCode,
+				WalletId = command.WalletId,
+				ExternalRoundId = command.ExternalRoundId,
+				ExternalBetId = command.ExternalBetId,
+				ExternalGameId = command.ExternalGameId,
+				BetState = GameBets.Common.Enums.BetState.Win,
+				BetType = GameBets.Common.Enums.BetType.Normal,
+				FreeGameState = GameBets.Common.Enums.FreeGameState.None,
+				GambleState = GameBets.Common.Enums.GambleState.None,
+				CashoutState = GameBets.Common.Enums.CashoutState.None,
+				ResettleState = GameBets.Common.Enums.ResettleState.None,
+				JackpotState = GameBets.Common.Enums.JackpotState.None,
+				CurrencyRatio = command.CurrencyRatio,
+				Bet = command.Bet,
+				ValidBet = command.ValidBet,
+				Settle = command.Settle,
+				WinLoss = command.WinLoss,
+				Turnover = command.Turnover,
+				Commission = command.Commission,
+				Contribute = command.Contribute,
+				Jackpot = command.Jackpot
+			}),
 			cancellationToken: Arg.Any<CancellationToken>())
 			.Returns(ValueTask.FromException<bool>(new HttpRequestException()), ValueTask.FromResult(true));
 

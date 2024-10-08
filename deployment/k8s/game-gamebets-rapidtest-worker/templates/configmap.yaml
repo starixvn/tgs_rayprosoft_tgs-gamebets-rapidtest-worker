@@ -13,7 +13,6 @@ data:
         }
       },
       "GameBetsRapidTestWorkerConnectionStrings": {
-        "GameBetsRapidTestClientBaseUrl": "http://game-gamebets-rapidtest/",
         "GameBetsClientBaseUrl": "http://game-gamebets/",
         "GameRoundsClientBaseUrl": "http://game-gamerounds/",
         "GameBetsWorkerClientBaseUrl": "http://game-gamebets-worker/"
